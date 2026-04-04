@@ -1,0 +1,20 @@
+---
+description: Route multi-step or skill-selection work through the skill-hr meta skill when appropriate.
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+# Skill-HR orchestration
+
+**Role:** `skill-hr` is the workspace’s **HR department for Agent Skills** (Skill-ecosystem HR), not a loose metaphor.
+
+When the user starts a **new multi-step task**, asks to **choose/install/remove skills**, or wants **skill performance / hiring / firing** semantics:
+
+1. Load the Agent Skill **`skill-hr`** from the user’s skills directory (this repo: `packages/skill-hr/SKILL.md` when developing the skill itself).
+2. Follow that skill’s **Mandatory flow** and progressive references—do not inline the full workflow here.
+3. Maintain state under **`.skill-hr/`** in the workspace (registry + incidents) as specified in `packages/skill-hr/references/06-state-and-artifacts.md`.
+
+**Safety**: Do not run unvetted `curl | sh` or delete skill directories without explicit user confirmation.
+
+Set `alwaysApply: true` only if you want every session to consider HR routing (higher noise).
