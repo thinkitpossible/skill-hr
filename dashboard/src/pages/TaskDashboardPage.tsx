@@ -16,7 +16,24 @@ const KANBAN_STATES = [
   "Delegated",
   "InProgress",
   "Debrief",
+  "Closed",
 ];
+
+/** Default "Advance" step — must match `hr_dispatch.py` `_VALID_TRANSITIONS` happy paths. */
+const DEFAULT_ADVANCE: Record<string, string> = {
+  Intake: "JDReady",
+  Designing: "Training",
+  Training: "TrainingReview",
+  TrainingReview: "Matching",
+  JDReady: "Matching",
+  Matching: "Matched",
+  Matched: "Delegated",
+  Recruiting: "Vetting",
+  Vetting: "Matched",
+  Delegated: "InProgress",
+  InProgress: "Debrief",
+  Debrief: "Closed",
+};
 
 export function TaskDashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -35,8 +52,7 @@ export function TaskDashboardPage() {
   }, [data]);
 
   async function handleAdvance(task: Task) {
-    const index = KANBAN_STATES.indexOf(task.state);
-    const nextState = index >= 0 ? KANBAN_STATES[index + 1] : undefined;
+    const nextState = DEFAULT_ADVANCE[task.state];
     if (!nextState) return;
     await updateTaskState(task.id, nextState, `Advanced from dashboard to ${nextState}`);
     setRefreshKey((value) => value + 1);
@@ -80,7 +96,7 @@ export function TaskDashboardPage() {
                       <Link to={`/tasks/${task.id}`} className="button secondary">
                         View workflow
                       </Link>
-                      {KANBAN_STATES.indexOf(task.state) < KANBAN_STATES.length - 1 ? (
+                      {DEFAULT_ADVANCE[task.state] ? (
                         <button className="button" onClick={() => void handleAdvance(task)}>
                           Advance
                         </button>
