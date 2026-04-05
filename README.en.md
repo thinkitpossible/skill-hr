@@ -6,9 +6,7 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Anthropic-blue)](https://support.anthropic.com/en/articles/12580037-what-are-skills)
 [![agentskills.io](https://img.shields.io/badge/spec-agentskills.io-8A2BE2)](https://agentskills.io)
 
-<!-- When the repo is public on GitHub: uncomment the line below and set OWNER/REPO for a live stars badge
-[![GitHub stars](https://img.shields.io/github/stars/OWNER/REPO?style=social&label=Star)](https://github.com/OWNER/REPO)
--->
+[![GitHub stars](https://img.shields.io/github/stars/thinkitpossible/skill-hr?style=social&label=Star)](https://github.com/thinkitpossible/skill-hr)
 
 **Meta Agent Skill · HR / orchestration for the Skill ecosystem**
 
@@ -69,14 +67,13 @@ End-to-end walk-through: [`examples/multi-agent-flow.md`](packages/skill-hr/exam
 
 **Optional: launch the local dashboard (business board + employee views + archive + templates)**
 
-```bash
-cd dashboard
-npm install
-npm run build
+From the repository root, build the frontend and start the API + static server (default port `8787`):
 
-# In another terminal at the repo root
-python packages/skill-hr/scripts/server.py --port 8787
+```bash
+python packages/skill-hr/scripts/launch_dashboard.py --workspace-root .
 ```
+
+On OpenClaw, when the agent must return while the server keeps running, add **`--background`**. If you only copied the `skill-hr/` skill folder without this repo’s `dashboard/` tree, use a full checkout or run `server.py` with `--static-dir` per [`references/hosts/openclaw.md`](packages/skill-hr/references/hosts/openclaw.md). Copy-paste rules / tool snippets: [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md).
 
 Then open `http://127.0.0.1:8787`. The server reuses workspace `.skill-hr/registry.json`, `.skill-hr/hr_tasks.json`, and `incidents/`.
 
@@ -191,6 +188,7 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 - **P02 output schema**: [`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)
 - **Benchmark scorer**: [`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)
 - **Claude Code on-disk skill scan (P02 aid)**: [`scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py)
+- **Local HR dashboard**: [`dashboard/`](dashboard/) + one-shot launcher [`scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py); OpenClaw copy-paste notes in [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md)
 
 </details>
 
@@ -285,6 +283,7 @@ flowchart LR
     R[README.md]
     A[AGENTS.md]
     CR[.cursor/rules]
+    D[dashboard frontend]
   end
   subgraph pkg [packages/skill-hr skill bundle]
     S[SKILL.md]
@@ -292,7 +291,7 @@ flowchart LR
     REF[references/00-08]
     PR[prompts P01-P06]
     HO[hosts claude-code + openclaw]
-    SC[scripts validate + hr_dispatch]
+    SC[scripts validate + hr_dispatch + launch_dashboard]
   end
   subgraph runtime [Workspace at runtime]
     REG[.skill-hr/registry.json]
@@ -333,6 +332,7 @@ flowchart LR
 | P02 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json) |
 | Benchmark comparison script | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py) |
 | CC disk skill scan | [`packages/skill-hr/scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py) |
+| Dashboard / OpenClaw workflow | [`dashboard/`](dashboard/), [`packages/skill-hr/scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py), [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md) |
 
 </details>
 
@@ -411,4 +411,4 @@ MIT — [`packages/skill-hr/LICENSE`](packages/skill-hr/LICENSE)
 
 ---
 
-If this repo helps you, a **Star** on GitHub makes updates easier to find; open an **Issue** when something breaks. Uncomment the stars badge at the top and set `OWNER/REPO` once the repository is public.
+If this repo helps you, a **Star** on [GitHub](https://github.com/thinkitpossible/skill-hr) makes updates easier to find; open an **Issue** when something breaks.

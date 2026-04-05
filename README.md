@@ -6,9 +6,7 @@
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Anthropic-blue)](https://support.anthropic.com/en/articles/12580037-what-are-skills)
 [![agentskills.io](https://img.shields.io/badge/spec-agentskills.io-8A2BE2)](https://agentskills.io)
 
-<!-- 仓库公开到 GitHub 后：取消下一行注释，并把 OWNER/REPO 换成真实路径，即可显示 Star 数
-[![GitHub stars](https://img.shields.io/github/stars/OWNER/REPO?style=social&label=Star)](https://github.com/OWNER/REPO)
--->
+[![GitHub stars](https://img.shields.io/github/stars/thinkitpossible/skill-hr?style=social&label=Star)](https://github.com/thinkitpossible/skill-hr)
 
 **Meta Agent Skill · Skill 生态 HR / 编排**
 
@@ -69,14 +67,13 @@ python packages/skill-hr/scripts/hr_dispatch.py list
 
 **可选：启动本地 Dashboard（业务看板 + 员工看板 + 归档 + 模板）**
 
-```bash
-cd dashboard
-npm install
-npm run build
+在仓库根目录一键构建前端并启动 API + 静态站（默认端口 `8787`）：
 
-# 另一个终端，在仓库根目录
-python packages/skill-hr/scripts/server.py --port 8787
+```bash
+python packages/skill-hr/scripts/launch_dashboard.py --workspace-root .
 ```
+
+OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷贝了 `skill-hr/` 技能目录、没有本仓库的 `dashboard/` 时，请用完整 clone，或按 [`references/hosts/openclaw.md`](packages/skill-hr/references/hosts/openclaw.md) 用手动 `server.py --static-dir …`。可复制规则/工具说明见 [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md)。
 
 然后打开 `http://127.0.0.1:8787`。服务会复用工作区根目录下的 `.skill-hr/registry.json`、`.skill-hr/hr_tasks.json` 与 `incidents/`。
 
@@ -191,6 +188,7 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 - **P02 输出 Schema**：[`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)
 - **基准打分**：[`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)
 - **Claude Code 磁盘技能扫描（P02 辅助）**：[`scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py)
+- **本地人事看板（Dashboard）**：仓库 [`dashboard/`](dashboard/) + 一键启动 [`scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py)；OpenClaw 场景下的复制与工具说明见 [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md)
 
 </details>
 
@@ -285,6 +283,7 @@ flowchart LR
     R[README.md]
     A[AGENTS.md]
     CR[.cursor/rules]
+    D[dashboard 前端]
   end
   subgraph pkg [packages/skill-hr 技能包]
     S[SKILL.md]
@@ -292,7 +291,7 @@ flowchart LR
     REF[references/00-08]
     PR[prompts P01-P06]
     HO[hosts 双宿主说明]
-    SC[scripts validate + hr_dispatch]
+    SC[scripts validate + hr_dispatch + launch_dashboard]
   end
   subgraph runtime [工作区运行时产物]
     REG[.skill-hr/registry.json]
@@ -333,6 +332,7 @@ flowchart LR
 | P02 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json) |
 | 基准对比脚本 | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py) |
 | CC 磁盘技能扫描 | [`packages/skill-hr/scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py) |
+| Dashboard / OpenClaw 副本工作流 | [`dashboard/`](dashboard/)、[`packages/skill-hr/scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py)、[`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md) |
 
 </details>
 
@@ -411,4 +411,4 @@ MIT — [`packages/skill-hr/LICENSE`](packages/skill-hr/LICENSE)
 
 ---
 
-若本仓库对你有用，欢迎在 GitHub 上 **Star** 便于后续更新；发现问题请开 **Issue**。将文首 HTML 注释里的 `OWNER/REPO` 换成真实仓库并取消注释后，星标徽章会显示在徽章行。
+若本仓库对你有用，欢迎在 [GitHub](https://github.com/thinkitpossible/skill-hr) 上 **Star** 便于后续更新；发现问题请开 **Issue**。

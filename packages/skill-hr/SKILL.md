@@ -1,6 +1,6 @@
 ---
 name: skill-hr
-description: "Use when the user starts a new multi-step task, asks to pick/install/manage skills, tune skill performance, or fire/remove a skill after failure. Acts as HR for the Skill ecosystem: JD intake, internal bench matching, vetted market recruitment, delegation handoffs, and HRIS-style performance logging with probation/termination. Does not replace domain skills' internal workflows."
+description: "Use when the user starts a new multi-step task, asks to pick/install/manage skills, tune skill performance, or fire/remove a skill after failure, or asks to start or open the skill-hr local Dashboard (HR board UI / 人事看板). Acts as HR for the Skill ecosystem: JD intake, internal bench matching, vetted market recruitment, delegation handoffs, and HRIS-style performance logging with probation/termination. Does not replace domain skills' internal workflows."
 license: MIT
 ---
 

@@ -131,6 +131,37 @@ The local dashboard can run beside OpenClaw as a read/write bridge over the same
 - task-board progress in `.skill-hr/hr_tasks.json`
 - incident trails written during recruitment, delegation, and debrief
 
+### Having the OpenClaw agent start the Dashboard
+
+OpenClaw does **not** auto-start the dashboard when a skill loads. Treat “run the dashboard” like any other **documented, user-approved** host action: if the user asks and the agent has a safe shell / process tool, **execute** the steps below from the machine that should serve the UI (usually the same host as the OpenClaw workspace), then report the URL.
+
+**Suggested user phrases (skill routing):** e.g. “Start the skill-hr Dashboard”, “Open the HR board UI”; 中文如「启动 skill-hr 看板」「打开人事看板」—aligned with `SKILL.md` `description` so `skill-hr` loads.
+
+**Prerequisites on that host:** `node` + `npm` (for build) and `python3` with the skill’s `scripts/` dependencies importable (run scripts with imports resolvable from `packages/skill-hr/scripts`—same as README).
+
+**Paths (important):** The launcher discovers a repo root that contains **`dashboard/package.json`**. If you only copied **`skill-hr/`** into `~/.openclaw/skills/` without the monorepo’s `dashboard/` tree, `launch_dashboard.py` will exit with an error—use a **full git checkout**, or run `server.py` manually with **`--static-dir`** to a built `dashboard/dist`.
+
+**Preferred one-shot (workspace = repo root with `dashboard/` and `.skill-hr/`):**
+
+```bash
+python packages/skill-hr/scripts/launch_dashboard.py --workspace-root . --port 8787
+```
+
+- **OpenClaw / agent should return while the server keeps running:** add **`--background`**, then tell the user to open `http://127.0.0.1:8787` (or the chosen `--host` / `--port`).
+- **Faster repeat runs** when `dashboard/dist` is already fresh: **`--skip-build`** (skips `npm ci` / `npm install` and `npm run build`).
+
+**Manual / troubleshooting flow** (equivalent to what the launcher does by default):
+
+1. `cd dashboard && npm install && npm run build` (or `npm ci` when `package-lock.json` exists)
+2. From repo root: `python packages/skill-hr/scripts/server.py --port 8787 --workspace-root .`
+   - If static files are elsewhere: add `--static-dir /path/to/dashboard/dist`
+
+**Long-running process:** In the foreground the server blocks; prefer **`launch_dashboard.py --background`** (or your tool’s detached job) so the agent can still reply. If the sandbox has no Node or Python, or binds are forbidden, report that blocker instead of guessing.
+
+**Completion-first:** when the user asks to “open” or “start” the dashboard, prefer running the command above (after any needed approval) over returning only prose instructions.
+
+**Copy-paste rules / tool text:** [openclaw-dashboard-workflow.md](openclaw-dashboard-workflow.md).
+
 ## Maintenance
 
 When OpenClaw changes default paths or config keys, update this file in **one focused edit** and align any examples in **`references/prompts/P04-market-search-brief.md`** outputs for `host: openclaw`.
