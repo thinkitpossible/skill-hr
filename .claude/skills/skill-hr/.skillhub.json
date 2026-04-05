@@ -1,0 +1,6 @@
+{
+  "name": "skill-hr",
+  "description": "HR for the Skill ecosystem: JD intake, installed-skill matching, vetted recruitment, delegation handoffs, registry and incidents.",
+  "category": "meta",
+  "visibility": "private"
+}

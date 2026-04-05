@@ -18,7 +18,9 @@
       "tasks_total": 5,
       "tasks_success": 5,
       "tasks_fail": 0,
-      "notes": "Reliable for extraction; not for scanned PDFs without OCR tool"
+      "notes": "Reliable for extraction; not for scanned PDFs without OCR tool",
+      "cc_scope": "user",
+      "cc_invoke": "auto"
     },
     {
       "id": "experimental-foo",

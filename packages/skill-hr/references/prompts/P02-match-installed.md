@@ -2,7 +2,7 @@
 
 ## Objective
 
-Run **two-stage** matching: **P02a** broad recall into a shortlist, then **P02b** rubric precision on that shortlist only. Decide: auto-delegate, confirm with user, or recruit.
+Run **two-stage** matching: **P02a** broad recall into a shortlist, then **P02b** rubric precision on that shortlist only. Decide: delegate and continue execution, pause for a real user gate, or recruit and keep the flow moving.
 
 Machine-readable output **must** conform to [`../../schemas/p02-output.schema.json`](../../schemas/p02-output.schema.json).
 
@@ -15,6 +15,17 @@ Machine-readable output **must** conform to [`../../schemas/p02-output.schema.js
   - `registry_status` from `.skill-hr/registry.json` when present, or from benchmark `skill_catalog[].registry_status`: `active` \| `on_probation` \| `terminated` \| `frozen`
   - Optional registry stats: `tasks_success`, `tasks_total`, `last_used_at`, per-skill `notes`
 - `matching_config`: `delegate_min_score`, `confirm_band_min` (defaults **75** / **60**).
+
+## When host is Claude Code (`claude-code`)
+
+Before P02a, assemble the **full candidate pool** per [`../hosts/claude-code.md`](../hosts/claude-code.md) (P02 checklist). In practice:
+
+1. **Multiple filesystem roots:** project `<workspace>/.claude/skills/`, **nested** `<workspace>/**/.claude/skills/`, optional **user** `~/.claude/skills/`, and any **`--add-dir`** trees the user says are in scope. Skip expensive dirs (`node_modules`, `.git`, etc.) when scanning.
+2. **Plugin skills:** names may appear as `plugin-name:skill-name`. If the agent cannot see plugin files on disk, **merge** skills the user lists from the slash menu or session skill listing; note provenance gaps in P02b `gaps` / `confidence` when the catalog is incomplete.
+3. **Frontmatter routing:** if `disable-model-invocation: true`, treat as **manual-first**: do not choose auto-`delegate` solely on score. Use `confirm` only because the host requires manual invocation, and say explicitly that the gate is host-imposed rather than a weak match. If `paths` is set and current task files likely do not match, add a **`gaps`** line that the skill may not auto-load for this workspace path set.
+4. **Precedence:** if two installed copies share the same logical name, the **effective** skill is the one Claude Code resolves (enterprise, then personal, then project; plugins namespaced). Prefer the path you infer is **winning** for `skill_id` / excerpts, and mention ambiguity in `evidence` if unsure.
+
+Optional: run `python packages/skill-hr/scripts/scan_claude_code_skills.py` at the workspace root to seed a JSON list of on-disk skills before scoring.
 
 ## Phase P02a — Broad recall (shortlist)
 
@@ -75,10 +86,17 @@ Full field definitions: [`../../schemas/p02-output.schema.json`](../../schemas/p
 Let `delegate_min_score` = D, `confirm_band_min` = C (from `matching_config`).
 
 - `best.score >= D` and `best.confidence` is not `low` → `delegate`.
-- `C <= best.score < D` → `confirm` (present top 2 and recommendation; apply probation +5 margin rule from `03` when applicable).
+- `C <= best.score < D` → `confirm` only when a real user or host gate blocks immediate execution; otherwise prefer `delegate` with explicit caveats or `recruit`, whichever keeps the flow moving safely.
 - `best.score < C` → `recruit`.
 
-**Probation:** If best candidate `on_probation`, require **+5** score margin over second place to auto-`delegate`; else `confirm`.
+**Probation:** If best candidate `on_probation`, require **+5** score margin over second place to auto-`delegate`; else `confirm` or `recruit` depending on whether the next step is genuinely user-gated.
+
+## Execution ownership
+
+- **`delegate`** means the framework should continue into P03 immediately and wait for an incumbent result or a proven blocker before the main reply.
+- **`confirm`** is for real stop points only: destructive actions, approval-required installs, unclear requirements, missing credentials, or manual-only host invocation.
+- **`recruit`** means continue into P04 immediately; do not stop at a search brief if the next safe host actions are still executable by the agent.
+- **OpenClaw:** if the next documented action is agent-executable, choose `delegate` or `recruit` rather than returning a procedural explanation.
 
 ## Quality gates
 

@@ -2,7 +2,7 @@
 
 ## Goals
 
-Find a **third-party** skill when internal pool fails. Maximize fit and safety; minimize surprise installs.
+Find a **third-party** skill when internal pool fails. Maximize fit and safety; minimize surprise installs; keep the framework moving until a real approval gate or blocker is hit.
 
 ## Search strategy
 
@@ -22,11 +22,18 @@ Find a **third-party** skill when internal pool fails. Maximize fit and safety; 
 
 ## Install posture (host-specific)
 
-Follow [hosts/claude-code.md](hosts/claude-code.md) or [hosts/openclaw.md](hosts/openclaw.md). Common pattern:
+Use the host adapter end-to-end: [hosts/claude-code.md](hosts/claude-code.md) (precedence, nested `.claude/skills/`, plugins, `--add-dir`, P02 checklist) or [hosts/openclaw.md](hosts/openclaw.md) (OpenClaw roots, CLI, gateway reload). Common pattern after that:
 
-1. Clone or copy skill into the host's skills directory.
+1. Install per host (clone, copy, marketplace/plugin, or `openclaw skills install` as documented).
 2. Register in `.skill-hr/registry.json` with `status: on_probation`, `source_url` set.
-3. Run a **smoke task** aligned with JD (tiny scope) before full delegation.
+3. Verify the host can now see the skill.
+4. Run a **smoke task** aligned with JD (tiny scope) before full delegation.
+
+## Execution split
+
+- **Agent-executable after candidate approval:** documented local copy steps, `openclaw skills install` against a vetted source, `openclaw skills list`, host reloads, registry writeback, and smoke-task delegation.
+- **Still user-gated:** unvetted network scripts, destructive filesystem changes, purchases, secrets, auth flows requiring user action, and anything outside documented host posture.
+- **Do not stop at the shortlist** if the next approved host steps are still safe for the agent to execute.
 
 ## User consent
 
@@ -36,9 +43,12 @@ Present **shortlist top 1–2** with risks. Obtain explicit OK before:
 - Adding submodules
 - Executing downloaded scripts
 
+For OpenClaw, approval of the candidate should normally unlock the documented install-and-verify path in one contiguous run; do not re-ask for each safe substep.
+
 ## After install
 
 - Immediately run P03 with reduced scope if appropriate.
+- Keep going until the installed skill either reaches a smoke-test completion checkpoint or produces a proven blocker.
 - P05 must set `on_probation` until first **success** on a real criterion (org choice: one or two successes to promote to `active`).
 
 ## Failure of recruitment

@@ -14,6 +14,8 @@
 3. **Build internal skill** — Use `skill-creator` pattern: author a minimal SKILL.md in-repo under `.cursor/skills` or host-global path, register as `on_probation`.
 4. **Defer** — Park task; write incident with `outcome: deferred` and blockers.
 
+Prefer branches that still attempt execution over branches that only restate instructions. If policy allows, try constrained generalist execution or a reduced-scope retry before ending on a pure advice response.
+
 ## Minimum artifact
 
 Even when escalating, create an incident stub capturing:
@@ -21,7 +23,9 @@ Even when escalating, create an incident stub capturing:
 - JD summary
 - Why internal and external pools failed
 - Exact questions for the user
+- What execution was attempted before escalation
+- What partial artifact or blocker evidence now exists
 
 ## No silent failure
 
-Never end with "cannot help" without **one** concrete next step (question, command, or doc link).
+Never end with "cannot help" without **one** concrete next step (question, command, doc link, or bounded execution branch).

@@ -2,6 +2,14 @@
 
 **HR deployment note:** On OpenClaw, treat **`skill-hr` as the dedicated HR function** for your skill workforce—the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`, with `.skill-hr/` registry and incidents as the **HR record** for assignments (host-agnostic paths; see `references/06-state-and-artifacts.md`).
 
+## Execution contract
+
+On OpenClaw, this host adapter is not just a human runbook. It is the execution contract for which steps the agent should keep running before replying:
+
+- **Default posture:** if the next step is documented, vetted, and non-destructive, execute it and continue the flow.
+- **Stop only for real gates:** explicit approval requirements, secrets, destructive changes, missing permissions, or a proven blocker.
+- **Report after action:** prefer "installed, verified, delegated" or "blocked because X" over "here is the sequence I would follow."
+
 ## Source of truth (keep current with upstream)
 
 Authoritative behavior and schema change with OpenClaw releases. Prefer these pages when anything below drifts:
@@ -63,6 +71,26 @@ Useful **`skills.load`** knobs (defaults may change—see [Skills config](https:
 - For bench analysis, you may still enumerate skill directories under the roots above and read each **`SKILL.md`** frontmatter (`name`, `description`).
 - Merge with **project** `.skill-hr/registry.json` when the workspace uses HR state in-repo.
 
+## Safe agent actions vs user-gated actions
+
+**Normally agent-executable after the candidate itself is approved:**
+
+- `openclaw skills list`
+- `openclaw skills install ...` against a vetted marketplace or source
+- Copying a vetted local skill folder into a documented OpenClaw skill root
+- Starting a new session or running `openclaw gateway restart` when reload is required
+- Writing `.skill-hr/registry.json` and incident artifacts
+- Running a smoke delegation after install
+
+**Still user-gated:**
+
+- Unvetted shell from the network
+- Destructive filesystem cleanup or uninstall
+- Auth or payment steps requiring the user
+- Any action that violates the current sandbox / permissions posture
+
+Approval should be collected at the **candidate / risk** level when possible, not repeated for every safe substep in the same install-and-verify path.
+
 ## Format notes (OpenClaw ↔ this bundle)
 
 OpenClaw documents **[AgentSkills](https://agentskills.io/)**-compatible folders with **`SKILL.md`** + YAML frontmatter. The embedded parser expects **single-line frontmatter keys**; keep `description` on **one line** (quoted if it contains `:`). If you add **`metadata.openclaw`**, upstream expects it as a **single-line JSON object** in frontmatter—see [Skills](https://docs.openclaw.ai/tools/skills).
@@ -74,6 +102,18 @@ Optional: use **`{baseDir}`** in instructions to mean the skill folder path (Ope
 - **From ClawHub / CLI:** prefer documented commands such as **`openclaw skills install …`** and **`openclaw skills update --all`** per [ClawHub](https://docs.openclaw.ai/tools/clawhub); installs into the **active workspace** `skills/` tree unless your setup differs.
 - **From git:** cloning or copying into one of the skill roots above is fine; log **`source_url`** in `.skill-hr/registry.json`.
 - **Safety:** treat third-party skills as untrusted; avoid silent **`curl | sh`**. Gateway-backed installs may run a **dangerous-code scanner**—still apply **`references/01-competency-model.md`** vetoes and user confirmation before risky steps.
+
+## OpenClaw happy path
+
+When recruitment is needed and the candidate passes vetting:
+
+1. Present the top candidate and the approval-gated risks once.
+2. After approval, run the documented install path.
+3. Verify visibility with `openclaw skills list` and reload if needed.
+4. Register the skill as `on_probation`.
+5. Continue into delegation or smoke-task execution before replying.
+
+Do not stop after step 1 if steps 2–5 are still safe and documented.
 
 ## Sandbox and env
 

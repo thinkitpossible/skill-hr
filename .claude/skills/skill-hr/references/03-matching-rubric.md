@@ -16,11 +16,19 @@ Allocate points and **document sub-scores** on every P02b row (`subscores` in JS
 
 Stored in `registry.json` → `matching`:
 
-- **`delegate_min_score`**: 75 — auto route with P03.
-- **`confirm_band_min`**: 60 — show top 2, recommend one, ask user.
+- **`delegate_min_score`**: 75 — route with P03 and continue execution to a completion checkpoint.
+- **`confirm_band_min`**: 60 — reserve for true user gates such as destructive actions, unclear ownership, or required approval.
 - Below **60** — recruit (P04).
 
 Override per org: lower delegate only if incidents show low false positives.
+
+## Decision semantics
+
+- **`delegate`** means the framework owns dispatch: prepare P03, invoke the incumbent when the host allows it, wait for a completion checkpoint, then continue into P05 before the main reply.
+- **`confirm`** is not the default "recommendation" band. Use it only when the flow truly needs user input to continue: destructive or costly actions, ambiguous ownership, unclear JD, missing access, or host-specific manual-only invocation.
+- **`recruit`** means proceed to P04 and keep executing the recruitment flow until a real approval gate or blocker is reached.
+- **OpenClaw:** prefer `delegate` or `recruit` over `confirm` whenever the next documented step is agent-executable.
+- **Claude Code:** manual-first rules in `hosts/claude-code.md` still apply when a skill cannot be safely auto-invoked.
 
 ## Hard negatives and near-neighbor disambiguation
 

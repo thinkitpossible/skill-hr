@@ -12,6 +12,8 @@ from typing import Any
 REQUIRED_TOP = ("skill_hr_version", "updated_at", "skills", "matching")
 REQUIRED_SKILL = ("id", "name", "status", "added_at", "tasks_total", "tasks_success", "tasks_fail")
 ALLOWED_STATUS = frozenset({"active", "on_probation", "terminated", "frozen"})
+ALLOWED_CC_SCOPE = frozenset({"user", "project", "nested", "plugin", "unknown"})
+ALLOWED_CC_INVOKE = frozenset({"auto", "manual_only"})
 REQUIRED_MATCHING = ("delegate_min_score", "confirm_band_min", "max_trials_per_task_per_skill")
 
 
@@ -70,6 +72,20 @@ def validate(data: Any, path: str) -> list[str]:
                 errors.append(f"{p}.{cnt}: must be integer")
             if cnt in s and isinstance(s[cnt], int) and s[cnt] < 0:
                 errors.append(f"{p}.{cnt}: must be non-negative")
+        if "cc_scope" in s:
+            if not isinstance(s["cc_scope"], str):
+                errors.append(f"{p}.cc_scope: must be string")
+            elif s["cc_scope"] not in ALLOWED_CC_SCOPE:
+                errors.append(
+                    f"{p}.cc_scope: must be one of {sorted(ALLOWED_CC_SCOPE)}"
+                )
+        if "cc_invoke" in s:
+            if not isinstance(s["cc_invoke"], str):
+                errors.append(f"{p}.cc_invoke: must be string")
+            elif s["cc_invoke"] not in ALLOWED_CC_INVOKE:
+                errors.append(
+                    f"{p}.cc_invoke: must be one of {sorted(ALLOWED_CC_INVOKE)}"
+                )
 
     return errors
 
