@@ -34,17 +34,18 @@ Paths: when the skill is installed as `skill-hr/`, use `skill-hr/scripts/hr_disp
 
 ## Permission matrix (who may invoke whom)
 
-| From / To | hr-director | job-analyst | talent-assessor | recruiter | compliance | onboarder | perf-manager | hris-admin |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **hr-director** | — | invoke | invoke | invoke | invoke | invoke | invoke | read |
-| **job-analyst** | return only | — | — | — | — | — | — | read |
-| **talent-assessor** | return only | — | — | — | — | — | — | read |
-| **recruiter** | return only | — | — | — | invoke | — | — | read/write |
-| **compliance** | return only | — | — | — | — | — | — | read/write |
-| **onboarder** | return only | — | — | — | — | — | — | read/write |
-| **perf-manager** | return only | — | — | — | invoke | — | — | read/write |
+| From / To | hr-director | job-analyst | talent-assessor | recruiter | compliance | onboarder | perf-manager | trainer | hris-admin |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **hr-director** | — | invoke | invoke | invoke | invoke | invoke | invoke | invoke | read |
+| **job-analyst** | return only | — | — | — | — | — | — | — | read |
+| **talent-assessor** | return only | — | — | — | — | — | — | — | read |
+| **recruiter** | return only | — | — | — | invoke | — | — | — | read/write |
+| **compliance** | return only | — | — | — | — | — | — | — | read/write |
+| **onboarder** | return only | — | — | — | — | — | — | — | read/write |
+| **perf-manager** | return only | — | — | — | invoke | — | — | invoke | read/write |
+| **trainer** | return only | — | — | invoke | invoke | — | — | — | read/write |
 
-- **invoke**: only **hr-director** may treat another agent as the next sub-step in a run, except **recruiter → compliance**, **perf-manager → compliance** for vetting/termination safety reviews.
+- **invoke**: only **hr-director** may treat another agent as the next sub-step in a run, except **recruiter → compliance**, **perf-manager → compliance**, and **trainer → recruiter/compliance** when employee design requires new external skills or safety review.
 - **hris-admin**: invoked conceptually for registry/incidents; in single-agent hosts, one process loads `references/06-state-and-artifacts.md` and updates `.skill-hr/` per that doc.
 
 ## Communication protocol
@@ -87,4 +88,5 @@ Paths: when the skill is installed as `skill-hr/`, use `skill-hr/scripts/hr_disp
 | `compliance` | `compliance/` | Vetting |
 | `onboarder` | `onboarder/` | P03 handoff |
 | `perf-manager` | `perf-manager/` | P05 / P06 |
+| `trainer` | `trainer/` | Employee design / retraining |
 | `hris-admin` | `hris-admin/` | Registry + incidents |

@@ -7,13 +7,14 @@ Produce a **handoff package** so the selected skill (incumbent) executes without
 ## Inputs
 
 - `jd`: P01 JSON.
-- `selected_skill`: `skill_id`, `name`, `description`, optional `references` hints.
+- `selected_skill`: `skill_id`, `name`, `description`, optional `employee_id`, `employee_name`, and `references` hints.
 - `user_verbatim`: key user quotes.
 - `incident_stub`: proposed `incident_id` or filename stem.
 
 ## Procedure
 
 1. Write **`context_for_incumbent`**: mission, success criteria, deliverables, constraints—no internal HR scoring prose.
+   - If the selected worker is a multi-skill employee, name the employee once and call out the primary skill plus any secondary skills that materially matter.
 2. Add **`do_not_do`**: scope cuts, forbidden actions (from user or policy).
 3. Specify **`completion_checkpoint`**: what counts as "done enough to report back" for this assignment.
 4. Specify **`report_back_format`**: exact fields the incumbent should return after work (see below).

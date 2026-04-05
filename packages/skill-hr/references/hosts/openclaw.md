@@ -1,6 +1,6 @@
 # Host adapter: OpenClaw
 
-**HR deployment note:** On OpenClaw, treat **`skill-hr` as the dedicated HR function** for your skill workforce—the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`, with `.skill-hr/` registry and incidents as the **HR record** for assignments (host-agnostic paths; see `references/06-state-and-artifacts.md`).
+**HR deployment note:** On OpenClaw, treat **`skill-hr` as the dedicated HR function** for your skill workforce—the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`, with `.skill-hr/` registry and incidents as the **HR record** for assignments (host-agnostic paths; see `references/06-state-and-artifacts.md`). In v2, route normal work through `employees[]` and use `skills[]` as the underlying capability catalog.
 
 ## Execution contract
 
@@ -69,7 +69,7 @@ Useful **`skills.load`** knobs (defaults may change—see [Skills config](https:
 
 - Prefer **`openclaw skills list`** for the effective snapshot on that session.
 - For bench analysis, you may still enumerate skill directories under the roots above and read each **`SKILL.md`** frontmatter (`name`, `description`).
-- Merge with **project** `.skill-hr/registry.json` when the workspace uses HR state in-repo.
+- Merge with **project** `.skill-hr/registry.json` when the workspace uses HR state in-repo. If `employees[]` exists, prefer ranking employee bundles after the raw skill discovery step.
 
 ## Safe agent actions vs user-gated actions
 
@@ -110,7 +110,7 @@ When recruitment is needed and the candidate passes vetting:
 1. Present the top candidate and the approval-gated risks once.
 2. After approval, run the documented install path.
 3. Verify visibility with `openclaw skills list` and reload if needed.
-4. Register the skill as `on_probation`.
+4. Register the skill as `on_probation`. If the skill belongs to a designed employee, append it to that employee's record and add a `training_history[]` event.
 5. Continue into delegation or smoke-task execution before replying.
 
 Do not stop after step 1 if steps 2–5 are still safe and documented.
@@ -122,6 +122,14 @@ If the agent runs in a **sandbox**, host `process.env` may not apply to skill ch
 ## Incident and registry paths
 
 Use **workspace root** paths from **`references/06-state-and-artifacts.md`** so HR state can live in the repo (`.skill-hr/registry.json`, `.skill-hr/incidents/`) regardless of OpenClaw skill install location.
+
+## Dashboard bridge
+
+The local dashboard can run beside OpenClaw as a read/write bridge over the same workspace state. Keep the dashboard pointed at the repo root so it reflects:
+
+- OpenClaw-hosted employees and their host-specific skill bundles
+- task-board progress in `.skill-hr/hr_tasks.json`
+- incident trails written during recruitment, delegation, and debrief
 
 ## Maintenance
 

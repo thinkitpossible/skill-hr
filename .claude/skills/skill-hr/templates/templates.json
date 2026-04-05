@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-04-05T12:00:00Z",
+  "templates": [
+    {
+      "id": "employee-design",
+      "name": "Employee Design",
+      "category": "workforce",
+      "description": "Design or retrain a multi-skill employee for a new business capability.",
+      "complexity": "L",
+      "keywords": ["employee", "trainer", "multi-skill", "design"],
+      "recommended_employee_ids": ["trainer"],
+      "defaults": {
+        "title": "Design a new multi-skill employee",
+        "summary": "Design an employee profile, recommend skills, and define training steps."
+      }
+    },
+    {
+      "id": "skill-match-audit",
+      "name": "Skill Match Audit",
+      "category": "matching",
+      "description": "Review the installed workforce against a new JD and recommend the best incumbent.",
+      "complexity": "M",
+      "keywords": ["matching", "jd", "assessment", "delegate"],
+      "recommended_employee_ids": ["talent-assessor"],
+      "defaults": {
+        "title": "Audit the workforce for a new JD",
+        "summary": "Score the current workforce, explain the best fit, and identify gaps."
+      }
+    },
+    {
+      "id": "market-recruitment",
+      "name": "Market Recruitment",
+      "category": "recruitment",
+      "description": "Search for a new skill or employee composition when the current bench is weak.",
+      "complexity": "L",
+      "keywords": ["recruitment", "external", "install", "vetting"],
+      "recommended_employee_ids": ["recruiter", "compliance"],
+      "defaults": {
+        "title": "Recruit an external skill candidate",
+        "summary": "Search, vet, and onboard a candidate skill when the internal bench is insufficient."
+      }
+    },
+    {
+      "id": "incident-debrief",
+      "name": "Incident Debrief",
+      "category": "operations",
+      "description": "Review an assignment outcome, update counters, and decide retain/probation/terminate.",
+      "complexity": "M",
+      "keywords": ["incident", "debrief", "probation", "terminate"],
+      "recommended_employee_ids": ["perf-manager", "hris-admin"],
+      "defaults": {
+        "title": "Run a workforce debrief",
+        "summary": "Classify the outcome, update HR records, and recommend the next action."
+      }
+    },
+    {
+      "id": "workflow-repair",
+      "name": "Workflow Repair",
+      "category": "operations",
+      "description": "Repair a broken HR task flow or rebuild missing state from the audit trail.",
+      "complexity": "M",
+      "keywords": ["workflow", "repair", "state", "audit"],
+      "recommended_employee_ids": ["hr-director", "hris-admin"],
+      "defaults": {
+        "title": "Repair an HR workflow",
+        "summary": "Diagnose broken task flow and restore a consistent HR state."
+      }
+    },
+    {
+      "id": "host-rollout",
+      "name": "Host Rollout",
+      "category": "hosts",
+      "description": "Prepare a workforce rollout for Claude Code or OpenClaw with host-specific install notes.",
+      "complexity": "M",
+      "keywords": ["host", "claude-code", "openclaw", "rollout"],
+      "recommended_employee_ids": ["hr-director", "recruiter"],
+      "defaults": {
+        "title": "Roll out workforce support to a host",
+        "summary": "Prepare host-specific deployment, discovery, and verification steps."
+      }
+    }
+  ]
+}

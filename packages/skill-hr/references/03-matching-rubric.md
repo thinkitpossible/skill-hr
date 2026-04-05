@@ -2,12 +2,14 @@
 
 ## Scoring dimensions (0–100 total)
 
+When `registry.json` contains `employees[]`, score the **employee bundle** first and use `primary_skill` as the short label for the P02 record. Keep `skill_id` for compatibility, but the actual routing target may be a multi-skill employee.
+
 Allocate points and **document sub-scores** on every P02b row (`subscores` in JSON). Sub-scores **must sum** to total `score`.
 
 | Dimension | Max points | JSON key | Guidance |
 |-----------|------------|----------|----------|
-| Outcome fit | 40 | `outcome_fit` | Skill text covers the **same deliverables** as the JD, not just shared keywords |
-| Competency coverage | 30 | `competency_coverage` | Each `must_have` mapped in coverage matrix; major gap −8 to −12 equivalent |
+| Outcome fit | 40 | `outcome_fit` | Employee or skill text covers the **same deliverables** as the JD, not just shared keywords |
+| Competency coverage | 30 | `competency_coverage` | Each `must_have` mapped in coverage matrix; multi-skill coverage is allowed when one employee owns the bundle |
 | Tool / stack fit | 15 | `tool_stack_fit` | Languages, CLIs, MCP, browsers align with `tools_and_access` |
 | Quality / safety posture | 10 | `quality_safety` | Validation, scope discipline, safe patterns in skill text |
 | Freshness / trust | 5 | `freshness_trust` | Maintainer signal, narrow scope, no red flags |
@@ -39,6 +41,7 @@ When two+ skills share vocabulary or stack, **do not** split the tie on keyword 
 3. **Meta vs domain** — `skill-hr` must not win business JDs; domain skills must not win **skill workforce** JDs (see [`matching-lexicon.md`](matching-lexicon.md)).
 4. **Candidate-side vs hiring-manager** — Resume **writing** ≠ interview **design** from a resume.
 5. **Record `hard_negative_explanations`** in P02 output for runner-ups: one line **why** the higher-scoring neighbor is rejected (scope, missing MCP, wrong vendor API, etc.).
+6. **Employee vs loose handoff chain** — Prefer one employee that credibly covers the JD with a coherent skill bundle over a brittle sequence of unrelated single-skill hops, unless the bundle adds clear safety risk.
 
 ## Registry `notes` and empirical stats
 

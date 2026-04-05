@@ -21,6 +21,7 @@ This package can run as **one** agent following the flow below, or as a **depart
 | `compliance` | [agents/compliance/SOUL.md](agents/compliance/SOUL.md) | Vetting / safety gates |
 | `onboarder` | [agents/onboarder/SOUL.md](agents/onboarder/SOUL.md) | P03 handoff |
 | `perf-manager` | [agents/perf-manager/SOUL.md](agents/perf-manager/SOUL.md) | P05 debrief / P06 termination |
+| `trainer` | [agents/trainer/SOUL.md](agents/trainer/SOUL.md) | Employee design / retraining |
 | `hris-admin` | [agents/hris-admin/SOUL.md](agents/hris-admin/SOUL.md) | Registry + incidents discipline |
 
 - **Shared rules & permission matrix:** [agents/GLOBAL.md](agents/GLOBAL.md)
@@ -47,6 +48,7 @@ Execute in order. Record **which references were used** in the incident or trace
 1. **Intake → JD** — Read [references/02-jd-spec.md](references/02-jd-spec.md) and apply [references/prompts/P01-intake-to-jd.md](references/prompts/P01-intake-to-jd.md). Glossary: [references/00-glossary.md](references/00-glossary.md).
 2. **Match installed pool** — [references/03-matching-rubric.md](references/03-matching-rubric.md) + [references/prompts/P02-match-installed.md](references/prompts/P02-match-installed.md) + [references/matching-lexicon.md](references/matching-lexicon.md) (P02a recall). Competencies and vetoes: [references/01-competency-model.md](references/01-competency-model.md). P02 JSON shape: [schemas/p02-output.schema.json](schemas/p02-output.schema.json). **Claude Code:** follow the P02 discovery checklist in [references/hosts/claude-code.md](references/hosts/claude-code.md) so nested `.claude/skills/`, personal skills, `--add-dir`, and plugin names are not missed.
 3. **Branch**
+   - **Design / retrain employee** — [references/09-training-and-design.md](references/09-training-and-design.md) + [references/10-multi-skill-agent.md](references/10-multi-skill-agent.md) + [references/prompts/P07-design-agent.md](references/prompts/P07-design-agent.md) + [references/prompts/P08-training-plan.md](references/prompts/P08-training-plan.md).
    - **Strong match** — [references/prompts/P03-delegate-handoff.md](references/prompts/P03-delegate-handoff.md). After work: [references/prompts/P05-trial-and-debrief.md](references/prompts/P05-trial-and-debrief.md).
    - **Weak / no match** — [references/04-market-recruitment.md](references/04-market-recruitment.md) + [references/prompts/P04-market-search-brief.md](references/prompts/P04-market-search-brief.md). Install per host: [references/hosts/claude-code.md](references/hosts/claude-code.md) or [references/hosts/openclaw.md](references/hosts/openclaw.md). Then delegate (P03) and debrief (P05).
 4. **Failure handling** — [references/05-performance-and-termination.md](references/05-performance-and-termination.md) + [references/prompts/P06-termination-report.md](references/prompts/P06-termination-report.md). If stuck: [references/07-escalation.md](references/07-escalation.md).
@@ -85,13 +87,16 @@ Detect environment and follow the matching host file for skill paths, config key
 | `references/06-state-and-artifacts.md` | Registry/incident schema |
 | `references/07-escalation.md` | When no skill fits |
 | `references/08-framework-evaluation.md` | Full-stack evaluation plan (L0–L7) |
+| `references/09-training-and-design.md` | Employee design / retraining workflow |
+| `references/10-multi-skill-agent.md` | Multi-skill employee model |
 | `references/prompts/P01`–`P06` | Executable prompt templates |
+| `references/prompts/P07`–`P08` | Employee design and training templates |
 | `references/hosts/claude-code.md` | Claude Code paths |
 | `references/hosts/openclaw.md` | OpenClaw paths |
 | `benchmarks/matching/` | Gold cases + metric definitions for P02 |
 | `schemas/p02-output.schema.json` | Machine schema for P02 output |
 | `agents/GLOBAL.md` | Multi-agent shared rules, permissions, safety |
-| `agents/*/SOUL.md` | Per-role agent briefs (director, analyst, assessor, …) |
+| `agents/*/SOUL.md` | Per-role agent briefs (director, analyst, trainer, assessor, …) |
 | `scripts/hr_dispatch.py` | HR task state machine + `flow` / `progress` audit CLI |
 | `scripts/validate_registry.py` | Optional local validation |
 | `scripts/scan_claude_code_skills.py` | Optional JSON snapshot of on-disk CC skills under a workspace |

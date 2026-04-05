@@ -9,7 +9,7 @@ Classify **outcome**, attribute **root cause**, decide **next_action** for the s
 - `jd`: P01 JSON.
 - `handoff`: P03 output summary.
 - `incumbent_report`: structured or free-form result from the skill run.
-- `registry_entry`: prior stats for the skill, if any.
+- `registry_entry`: prior stats for the skill or employee, if any.
 - `max_trials_per_task_per_skill`: from registry matching config.
 
 ## Procedure
@@ -31,6 +31,7 @@ Classify **outcome**, attribute **root cause**, decide **next_action** for the s
 6. If `partial`, prefer `retrain_prompt` once; then `escalate` or `terminate` per user preference.
 7. Emit **incident** body + YAML frontmatter per `references/06-state-and-artifacts.md`.
 8. Update **registry** counters: `tasks_total++`, `tasks_success` or `tasks_fail` per rules in `references/05-performance-and-termination.md`.
+   - When `employees[]` exists, update the selected employee first. Skill-level counters may still be updated for compatibility or catalog telemetry.
 
 ## Output schema (JSON)
 

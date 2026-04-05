@@ -47,6 +47,9 @@ Top-level object:
 | State | Meaning |
 |-------|---------|
 | `Intake` | User request received; JD not finalized |
+| `Designing` | Trainer is designing or revising an employee profile |
+| `Training` | Skill bundle, SOUL, or onboarding plan is being prepared |
+| `TrainingReview` | Training output is being reviewed before reuse or delegation |
 | `JDReady` | P01 complete; ready for P02 |
 | `Matching` | P02 in progress |
 | `Matched` | Candidate skill selected (installed or approved) |
@@ -76,7 +79,8 @@ Top-level object:
     "confirm_band_min": 60,
     "max_trials_per_task_per_skill": 2
   },
-  "skills": []
+  "skills": [],
+  "employees": []
 }
 ```
 
@@ -97,6 +101,8 @@ Top-level object:
 | `notes` | string | no | HR notes (e.g. "good for forms, not OCR") |
 | `cc_scope` | string | no | Claude Code only: where the skill lives on disk — `user` \| `project` \| `nested` \| `plugin` \| `unknown` (from `hosts/claude-code.md` / `scan_claude_code_skills.py`) |
 | `cc_invoke` | string | no | Claude Code only: `auto` (model may auto-load) \| `manual_only` (`disable-model-invocation` or equivalent; prefer user `/skill`) |
+| `description` | string | no | Short catalog description used by the dashboard or host adapters |
+| `keywords` | string[] | no | Search helpers for templates and employee design |
 
 **Status semantics**
 
@@ -104,6 +110,45 @@ Top-level object:
 - `on_probation`: eligible but prefer confirmation for scores &lt; 85; mandatory debrief.
 - `terminated`: **not** eligible; excluded from P02 pool. Physical uninstall is separate and user-gated.
 - `frozen`: temporarily excluded (user or policy); not terminated.
+
+### `employees[]` item (v2)
+
+`employees[]` is the **workforce layer**. It models the employee or incumbent that HR can assign, even when that employee uses multiple underlying skills.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | yes | Stable employee id, e.g. `document-ops-01` |
+| `name` | string | yes | Human-readable employee name |
+| `status` | string | yes | `active` \| `on_probation` \| `terminated` \| `frozen` |
+| `skills` | string[] | yes | One or more skill ids from `skills[]` |
+| `primary_skill` | string | yes | Main skill used for routing and display |
+| `host` | string | yes | `claude-code` \| `cursor` \| `openclaw` \| `unknown` |
+| `created_by` | string | yes | `recruited` \| `trained` \| `migrated` |
+| `role_title` | string | no | Short position label used in dashboards or incidents |
+| `added_at` | string (ISO-8601) | yes | When this employee was registered |
+| `last_used_at` | string | no | Last delegated task |
+| `source_skill_id` | string | no | Legacy compatibility field when migrated from a single skill entry |
+| `notes` | string | no | HR notes on scope, reliability, or special handling |
+| `performance` | object | yes | `{tasks_total, tasks_success, tasks_fail}` counters at the employee level |
+| `training_history` | array | yes | Time-ordered training, retraining, and design events |
+
+### `training_history[]` item
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `ts` | string | yes | Timestamp of the event |
+| `action` | string | yes | Event label such as `created`, `skill_added`, `retrained`, `migrated_from_skill` |
+| `trainer_id` | string | no | Designing or training employee id, when known |
+| `skill_id` | string | no | Skill involved in the event |
+| `task_id` | string | no | HR task that triggered the training action |
+| `notes` | string | no | Free-form explanation |
+
+## Registry versioning and backward compatibility
+
+- **v1** registries contain `skills[]` only. Treat each active skill entry as a synthetic single-skill employee when a consumer expects `employees[]`.
+- **v2** registries keep `skills[]` as the shared skill catalog and add `employees[]` as the preferred assignment surface.
+- Existing tools may continue reading skill-level counters, but new dashboards and assignment logic should prefer `employees[]` when present.
+- See `schemas/registry-v2.schema.json` and `examples/registry-v2.example.json` for the canonical v2 shape.
 
 ## Incident markdown format
 

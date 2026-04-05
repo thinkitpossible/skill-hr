@@ -1,6 +1,6 @@
 # Host adapter: Claude Code
 
-**HR deployment note:** On Claude Code, `skill-hr` runs the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`. Registry and incidents use **workspace** paths from `references/06-state-and-artifacts.md` (`.skill-hr/`) so HR records can live in the repo.
+**HR deployment note:** On Claude Code, `skill-hr` runs the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`. Registry and incidents use **workspace** paths from `references/06-state-and-artifacts.md` (`.skill-hr/`) so HR records can live in the repo. In v2, prefer `employees[]` as the assignment layer and use `skills[]` as the shared skill catalog.
 
 ## Source of truth (keep current with upstream)
 
@@ -43,7 +43,7 @@ Build `candidates` by **merging** filesystem discovery, **plugin / session listi
 3. **Personal:** `~/.claude/skills/*/` (if policy allows reading outside the workspace).
 4. **Add-dir roots:** for each `--add-dir` path the user/session reports, repeat step 1–2 under that directory.
 5. **Plugin skills:** agents often **cannot** enumerate every plugin-only skill from disk alone. Ask the user to paste **slash-menu / skill list** output, or merge names like `plugin:skill` when known. Flag unknown provenance in `gaps` / notes.
-6. **Registry merge:** for each discovered skill `id`, attach `registry_status`, stats, and `notes` from `.skill-hr/registry.json` when present. Optionally persist `cc_scope` / `cc_invoke` per `06-state-and-artifacts.md`.
+6. **Registry merge:** for each discovered skill `id`, attach `registry_status`, stats, and `notes` from `.skill-hr/registry.json` when present. Optionally persist `cc_scope` / `cc_invoke` per `06-state-and-artifacts.md`. If `employees[]` exists, merge discovered skills into the employee bundle that owns them before final P02 ranking.
 
 **Helper:** run `python packages/skill-hr/scripts/scan_claude_code_skills.py` from the workspace for a JSON snapshot of on-disk skills (see script docstring for plugin limitations).
 
@@ -66,7 +66,7 @@ Read each `SKILL.md` frontmatter in addition to body excerpts. Fields that affec
 - **Public git:** `git clone` or copy the skill folder into **project** `.claude/skills/<name>/` (team-visible) or **personal** `~/.claude/skills/<name>/`, then verify the skill is visible for the session.
 - **No silent risk:** never run unvetted `curl | sh` or delete skill trees without explicit user confirmation.
 
-After install, register in `.skill-hr/registry.json` with `status: on_probation` and `source_url` when known; run a **smoke** task before full delegation (`04-market-recruitment.md`).
+After install, register in `.skill-hr/registry.json` with `status: on_probation` and `source_url` when known; if the skill belongs to a designed employee, append it to that employee record and write a `training_history[]` event. Run a **smoke** task before full delegation (`04-market-recruitment.md`).
 
 ## Verification (non-prescriptive)
 
@@ -79,6 +79,13 @@ Claude Code agents typically have shell, file read/write, and optional MCP. Recr
 ## Incident and registry paths
 
 Use **workspace root** paths from `references/06-state-and-artifacts.md` so HR state travels with the repo when desired.
+
+## Dashboard bridge
+
+The local dashboard and API bridge also read workspace `.skill-hr/` state. When the dashboard is used on Claude Code, prefer launching it from the same repo root so:
+
+- nested project skills and the HR registry stay in one workspace
+- the bridge can visualize `employees[]`, `hr_tasks.json`, and incidents without copying state elsewhere
 
 ## Maintenance
 

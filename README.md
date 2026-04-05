@@ -18,6 +18,7 @@
 - **JD 结构化**：任务先落成岗位说明（P01），再谈派谁。
 - **内池打分**：已安装技能按 rubric 匹配（P02），不是拍脑袋。
 - **招聘 + 台账**：缺口走市场简报与 vetting（P04），**registry / incidents** 当 HRIS；默认 **逻辑淘汰**（`terminated`），**物理卸载只在你点头之后**。
+- **员工层升级**：`registry.json` 现支持 **`employees[]` 多技能员工**，并提供 **`trainer`** 角色负责设计与训练。
 - **多角色 HR 部门（可选）**：除「单会话跑完全流程」外，可按角色拆分——[`agents/`](packages/skill-hr/agents/) 下每人格一份 `SOUL.md`，共享规则见 [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md)；任务看板与合法状态迁移由 [`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) 写入 **`.skill-hr/hr_tasks.json`**（详见 [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)）。
 
 开源 **元 [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**：把 Skill 当成一支要管编制、招聘、绩效的队伍——**可执行的 people-ops**，不是一句比喻。可安装包在 [`packages/skill-hr/`](packages/skill-hr/)。
@@ -65,6 +66,19 @@ python packages/skill-hr/scripts/hr_dispatch.py list
 ```
 
 完整示例见 [`examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md)。
+
+**可选：启动本地 Dashboard（业务看板 + 员工看板 + 归档 + 模板）**
+
+```bash
+cd dashboard
+npm install
+npm run build
+
+# 另一个终端，在仓库根目录
+python packages/skill-hr/scripts/server.py --port 8787
+```
+
+然后打开 `http://127.0.0.1:8787`。服务会复用工作区根目录下的 `.skill-hr/registry.json`、`.skill-hr/hr_tasks.json` 与 `incidents/`。
 
 建议在项目说明（如 `CLAUDE.md`）里 **一句话写清何时启用 skill-hr**；细则只在 `SKILL.md` 与 `references/`。**规则负责喊开工，skill 负责教怎么干。**  
 技能旁的 `.skillhub.json`（若有）是集市元数据；人事记录请用 **`.skill-hr/registry.json`**；多角色编排时另有一份 **`.skill-hr/hr_tasks.json`**。

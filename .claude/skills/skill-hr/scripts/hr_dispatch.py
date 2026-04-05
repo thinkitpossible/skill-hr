@@ -12,6 +12,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 TASKS_FILE = "hr_tasks.json"
@@ -21,6 +22,9 @@ DEFAULT_STATE = "Intake"
 STATES = frozenset(
     {
         "Intake",
+        "Designing",
+        "Training",
+        "TrainingReview",
         "JDReady",
         "Matching",
         "Matched",
@@ -38,8 +42,11 @@ STATES = frozenset(
 
 # Directed edges: from_state -> allowed to_states
 _VALID_TRANSITIONS: dict[str, frozenset[str]] = {
-    "Intake": frozenset({"JDReady", "Escalation"}),
-    "JDReady": frozenset({"Matching", "Escalation"}),
+    "Intake": frozenset({"Designing", "JDReady", "Escalation"}),
+    "Designing": frozenset({"Training", "Matching", "Escalation"}),
+    "Training": frozenset({"TrainingReview", "Escalation"}),
+    "TrainingReview": frozenset({"Matched", "Designing", "Matching", "Escalation"}),
+    "JDReady": frozenset({"Matching", "Designing", "Escalation"}),
     "Matching": frozenset({"Matched", "Recruiting", "Escalation"}),
     "Recruiting": frozenset({"Vetting", "Escalation"}),
     "Vetting": frozenset({"Matched", "Recruiting", "Escalation"}),
@@ -119,6 +126,48 @@ def ensure_task_shape(t: dict[str, Any]) -> None:
         t["flow_log"] = []
     if not isinstance(t["progress_log"], list):
         t["progress_log"] = []
+
+
+def create_task(task_id: str, title: str, state: str = DEFAULT_STATE) -> None:
+    args = SimpleNamespace(id=task_id, title=title, state=state)
+    rc = cmd_create(args)
+    if rc != 0:
+        raise RuntimeError(f"Could not create task {task_id}")
+
+
+def transition_task_state(task_id: str, new_state: str, note: str = "") -> None:
+    args = SimpleNamespace(id=task_id, new_state=new_state, note=note)
+    rc = cmd_state(args)
+    if rc != 0:
+        raise RuntimeError(f"Could not transition task {task_id} to {new_state}")
+
+
+def append_task_flow(task_id: str, from_agent: str, to_agent: str, remark: str) -> None:
+    args = SimpleNamespace(id=task_id, from_agent=from_agent, to_agent=to_agent, remark=remark)
+    rc = cmd_flow(args)
+    if rc != 0:
+        raise RuntimeError(f"Could not append flow for task {task_id}")
+
+
+def append_task_progress(task_id: str, current: str, plan: str) -> None:
+    args = SimpleNamespace(id=task_id, current=current, plan=plan)
+    rc = cmd_progress(args)
+    if rc != 0:
+        raise RuntimeError(f"Could not append progress for task {task_id}")
+
+
+def list_tasks_data(root: Path | None = None) -> list[dict[str, Any]]:
+    workspace_root = find_workspace_root(root)
+    doc = load_doc(tasks_path(workspace_root))
+    tasks: list[dict[str, Any]] = doc["tasks"]
+    for task in tasks:
+        ensure_task_shape(task)
+    return tasks
+
+
+def get_task_data(task_id: str, root: Path | None = None) -> dict[str, Any]:
+    tasks = list_tasks_data(root)
+    return get_task(tasks, task_id)
 
 
 def cmd_create(args: argparse.Namespace) -> int:

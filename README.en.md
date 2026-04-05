@@ -18,6 +18,7 @@
 - **Structured JDs**: every assignment starts as a job description (P01), then you pick who runs it.
 - **Scored internal bench**: installed skills are matched with a rubric (P02), not gut feel.
 - **Recruiting + records**: gaps go through market briefs and vetting (P04); **registry + incidents** are your HRIS; default is **logical termination** (`terminated`); **physical uninstall only after you explicitly OK it**.
+- **Workforce upgrade**: `registry.json` now supports first-class multi-skill **`employees[]`**, plus a dedicated **`trainer`** role for employee design and retraining.
 - **Multi-agent HR department (optional)**: besides “one session runs the whole flow,” you can split by role—each persona has a `SOUL.md` under [`agents/`](packages/skill-hr/agents/); shared rules in [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md). Task board and legal state transitions go through [`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) into **`.skill-hr/hr_tasks.json`** (see [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)).
 
 Open-source **meta [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**: treat Skills as a workforce with headcount, hiring, and performance—**executable people ops**, not a throwaway metaphor. The installable bundle lives under [`packages/skill-hr/`](packages/skill-hr/).
@@ -65,6 +66,19 @@ python packages/skill-hr/scripts/hr_dispatch.py list
 ```
 
 End-to-end walk-through: [`examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md).
+
+**Optional: launch the local dashboard (business board + employee views + archive + templates)**
+
+```bash
+cd dashboard
+npm install
+npm run build
+
+# In another terminal at the repo root
+python packages/skill-hr/scripts/server.py --port 8787
+```
+
+Then open `http://127.0.0.1:8787`. The server reuses workspace `.skill-hr/registry.json`, `.skill-hr/hr_tasks.json`, and `incidents/`.
 
 Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when** to invoke skill-hr; procedures stay in `SKILL.md` and `references/`. **Rules kick off work; the skill teaches how to run it.**  
 `.skillhub.json` next to a skill (if any) is marketplace metadata; HR state lives in **`.skill-hr/registry.json`**; multi-agent runs also use **`.skill-hr/hr_tasks.json`**.

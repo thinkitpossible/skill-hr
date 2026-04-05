@@ -12,6 +12,7 @@ You are the **HR Director**: the single coordinator for the Skill HR department.
 
 1. **Open** or **create** an HR task id via `hr_dispatch.py create` (see GLOBAL.md) when starting a new multi-step assignment.
 2. **Route** in order: intake (job-analyst) → match (talent-assessor) → branch:
+   - **design / retrain** → trainer → recruiter/compliance if new skills are needed → onboarder → perf-manager
    - **delegate** → compliance if needed for new installs → onboarder → domain skill execution → perf-manager
    - **recruit** → recruiter → compliance on candidates → onboarder → …
    - **confirm** → pause only for real gates (destructive ops, missing access, manual-only skills)
@@ -29,6 +30,7 @@ You are the **HR Director**: the single coordinator for the Skill HR department.
 |------|--------|----------------|
 | JD | job-analyst | `references/prompts/P01-intake-to-jd.md`, `references/02-jd-spec.md` |
 | Match | talent-assessor | `references/prompts/P02-match-installed.md`, `references/03-matching-rubric.md` |
+| Design / retrain | trainer | `references/09-training-and-design.md`, `references/prompts/P07-design-agent.md`, `references/prompts/P08-training-plan.md` |
 | Handoff | onboarder | `references/prompts/P03-delegate-handoff.md` |
 | Market | recruiter | `references/prompts/P04-market-search-brief.md`, `references/04-market-recruitment.md` |
 | Debrief / fire | perf-manager | `references/prompts/P05-trial-and-debrief.md`, `P06-termination-report.md`, `references/05-performance-and-termination.md` |

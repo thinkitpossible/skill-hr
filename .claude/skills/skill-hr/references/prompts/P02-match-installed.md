@@ -9,8 +9,9 @@ Machine-readable output **must** conform to [`../../schemas/p02-output.schema.js
 ## Inputs
 
 - `jd`: JSON from P01 (including optional `search_queries`, `competency_tags`).
-- `candidates`: for each installed skill, at minimum:
+- `candidates`: for each installed skill or employee, at minimum:
   - `id`, `name`, frontmatter `description`
+  - Optional `employee_id`, `employee_name`, `primary_skill`, and `skills[]` when the registry exposes a multi-skill employee layer
   - **Excerpts**: short quotes from `SKILL.md` body (triggers, workflows, boundaries)—not description alone
   - `registry_status` from `.skill-hr/registry.json` when present, or from benchmark `skill_catalog[].registry_status`: `active` \| `on_probation` \| `terminated` \| `frozen`
   - Optional registry stats: `tasks_success`, `tasks_total`, `last_used_at`, per-skill `notes`
@@ -32,6 +33,7 @@ Optional: run `python packages/skill-hr/scripts/scan_claude_code_skills.py` at t
 **Goal:** Reduce the full pool to **≤ 12** skills (target **8–10**) without deep scoring.
 
 1. **Filter pool**: omit `terminated`, `frozen`. **Exclude `skill-hr`** unless the JD is explicitly about skill operations (install, registry, match, retire skills)—see [`../matching-lexicon.md`](../matching-lexicon.md) meta routing.
+   - When `employees[]` exists, shortlist employees first and treat `primary_skill` as the compatible `skill_id` label.
 2. For each remaining skill, gather **signals** (cheap):
    - Overlap between JD (`mission_statement`, `must_have_competencies`, `deliverables`, `search_queries`, `competency_tags`) and skill `description` + **body excerpts**
    - Lexicon hints from [`../matching-lexicon.md`](../matching-lexicon.md) (artifact family, integration surface, adjacency warnings)
@@ -59,7 +61,7 @@ For each `skill_id` in `recall_shortlist` only:
    - `coverage`: `covered` \| `partial` \| `missing`
    - `evidence`: one short **quote or faithful paraphrase** tied to skill text; use `""` only if `missing`
 
-4. **`hard_negative_explanations`** (when shortlist has ≥2 plausible skills): list objects `{ "skill_id", "excluded_because" }` for **runner-up** skills you reject vs `best`—cite scope, wrong artifact, missing tool, or registry `notes` conflict per [`../03-matching-rubric.md`](../03-matching-rubric.md).
+4. **`hard_negative_explanations`** (when shortlist has ≥2 plausible candidates): list objects `{ "skill_id", "excluded_because" }` for **runner-up** skills you reject vs `best`—cite scope, wrong artifact, missing tool, registry `notes` conflict, or a weaker employee bundle per [`../03-matching-rubric.md`](../03-matching-rubric.md).
 
 5. **`evidence`**: 2–5 bullets (strings) supporting the total score (may reference sub-scores).
 
@@ -74,8 +76,8 @@ For each `skill_id` in `recall_shortlist` only:
 **Do not invent fields** outside the JSON Schema. Top-level shape:
 
 - `recall_shortlist`: string[]
-- `candidates`: array of precision objects (only shortlist skills), each with `skill_id`, `skill_name`, `score`, `subscores`, `competency_coverage_matrix`, `evidence`, `gaps`, `confidence`, and optional `hard_negative_explanations` (may be empty array)
-- `best`: `{ "skill_id", "score" }` — highest after tie-break
+- `candidates`: array of precision objects (only shortlist skills or employees), each with `skill_id`, optional `employee_id`, `skill_name`, optional `employee_name`, `score`, `subscores`, `competency_coverage_matrix`, `evidence`, `gaps`, `confidence`, and optional `hard_negative_explanations` (may be empty array)
+- `best`: `{ "skill_id", "score" }` plus optional `employee_id` / `employee_name` when matching on the employee layer
 - `decision`: `delegate` \| `confirm` \| `recruit`
 - `decision_rationale`: string
 

@@ -2,11 +2,13 @@
 
 ## KPIs (lightweight)
 
-Tracked in `registry.json` per skill:
+Tracked in `registry.json` per skill, and in v2 primarily per employee:
 
 - `tasks_total` — completed assignments (success + fail + partial counted once each completion).
 - `tasks_success` — P05 `outcome: success`.
 - `tasks_fail` — P05 `outcome: fail` with `root_cause_class` in `skill_limit` or `wrong_match` (configurable).
+
+When `employees[]` exists, treat employee-level performance as the assignment truth and skill-level counters as supporting telemetry.
 
 **Partial** outcomes: increment `tasks_total`; do not increment `tasks_success` unless user accepts partial as success (document in incident).
 

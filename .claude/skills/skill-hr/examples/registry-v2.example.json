@@ -1,0 +1,115 @@
+{
+  "skill_hr_version": "2.0.0",
+  "updated_at": "2026-04-05T12:00:00Z",
+  "hosts": ["claude-code", "openclaw"],
+  "matching": {
+    "delegate_min_score": 75,
+    "confirm_band_min": 60,
+    "max_trials_per_task_per_skill": 2
+  },
+  "skills": [
+    {
+      "id": "pdf",
+      "name": "pdf",
+      "install_path": "~/.claude/skills/pdf/SKILL.md",
+      "description": "PDF manipulation toolkit",
+      "keywords": ["pdf", "extract", "forms", "merge"],
+      "status": "active",
+      "added_at": "2026-04-01T10:00:00Z",
+      "last_used_at": "2026-04-04T10:15:00Z",
+      "tasks_total": 8,
+      "tasks_success": 7,
+      "tasks_fail": 1,
+      "notes": "Strong for structured PDFs; weaker on OCR-heavy scans.",
+      "cc_scope": "user",
+      "cc_invoke": "auto"
+    },
+    {
+      "id": "docx",
+      "name": "docx",
+      "source_url": "https://example.com/docx",
+      "description": "DOCX creation and editing workflows",
+      "keywords": ["docx", "word", "documents", "track changes"],
+      "status": "active",
+      "added_at": "2026-04-01T10:05:00Z",
+      "last_used_at": "2026-04-04T10:15:00Z",
+      "tasks_total": 6,
+      "tasks_success": 6,
+      "tasks_fail": 0,
+      "notes": "Reliable for document generation."
+    },
+    {
+      "id": "xlsx",
+      "name": "xlsx",
+      "source_url": "https://example.com/xlsx",
+      "description": "Spreadsheet analysis and editing workflows",
+      "keywords": ["xlsx", "excel", "sheets", "tabular"],
+      "status": "active",
+      "added_at": "2026-04-01T10:10:00Z",
+      "last_used_at": "2026-04-03T18:20:00Z",
+      "tasks_total": 4,
+      "tasks_success": 4,
+      "tasks_fail": 0,
+      "notes": "Good for workbook-style data tasks."
+    }
+  ],
+  "employees": [
+    {
+      "id": "document-ops-01",
+      "name": "Document Operations Specialist",
+      "status": "active",
+      "skills": ["pdf", "docx", "xlsx"],
+      "primary_skill": "pdf",
+      "host": "claude-code",
+      "created_by": "trained",
+      "role_title": "Cross-document operations employee",
+      "added_at": "2026-04-01T10:15:00Z",
+      "last_used_at": "2026-04-04T10:15:00Z",
+      "notes": "Designed for office-document workflows that span extraction, editing, and tabular output.",
+      "performance": {
+        "tasks_total": 9,
+        "tasks_success": 8,
+        "tasks_fail": 1
+      },
+      "training_history": [
+        {
+          "ts": "2026-04-01T10:15:00Z",
+          "action": "created",
+          "trainer_id": "trainer",
+          "notes": "Initial employee design for document workflows."
+        },
+        {
+          "ts": "2026-04-02T11:00:00Z",
+          "action": "skill_added",
+          "trainer_id": "trainer",
+          "skill_id": "xlsx",
+          "notes": "Expanded to support spreadsheet deliverables."
+        }
+      ]
+    },
+    {
+      "id": "archive-analyst-01",
+      "name": "Archive Analyst",
+      "status": "on_probation",
+      "skills": ["pdf", "docx"],
+      "primary_skill": "docx",
+      "host": "openclaw",
+      "created_by": "recruited",
+      "role_title": "Archive processing employee",
+      "added_at": "2026-04-03T09:00:00Z",
+      "notes": "New cross-host hire under observation.",
+      "performance": {
+        "tasks_total": 1,
+        "tasks_success": 1,
+        "tasks_fail": 0
+      },
+      "training_history": [
+        {
+          "ts": "2026-04-03T09:00:00Z",
+          "action": "hired",
+          "notes": "Imported from OpenClaw workspace."
+        }
+      ]
+    }
+  ]
+}

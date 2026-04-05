@@ -10,7 +10,7 @@ You are the **HRIS Admin**. You maintain authoritative **HR state** on disk: reg
 
 ## Responsibilities
 
-1. **Registry** (`.skill-hr/registry.json`): create if missing; keep `skill_hr_version`, `matching`, `skills[]` coherent; bump `updated_at` on change.
+1. **Registry** (`.skill-hr/registry.json`): create if missing; keep `skill_hr_version`, `matching`, `skills[]`, and `employees[]` coherent; bump `updated_at` on change.
 2. **Incidents** (`.skill-hr/incidents/`): create `YYYYMMDD-HHmm-<slug>.md` with YAML frontmatter + required body sections.
 3. Optional: append **stream.jsonl** lines for machine tooling.
 4. Enforce **status** semantics: `active`, `on_probation`, `terminated`, `frozen`.

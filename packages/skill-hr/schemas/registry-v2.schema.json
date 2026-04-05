@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-hr.dev/schemas/registry-v2.schema.json",
+  "title": "Skill HR Registry v2",
+  "description": "Backward-compatible Skill HR registry with a shared skill catalog and first-class multi-skill employees.",
+  "type": "object",
+  "required": [
+    "skill_hr_version",
+    "updated_at",
+    "matching",
+    "skills"
+  ],
+  "properties": {
+    "skill_hr_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hosts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "matching": {
+      "type": "object",
+      "required": [
+        "delegate_min_score",
+        "confirm_band_min",
+        "max_trials_per_task_per_skill"
+      ],
+      "properties": {
+        "delegate_min_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "confirm_band_min": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "max_trials_per_task_per_skill": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skill"
+      }
+    },
+    "employees": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/employee"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "skillStatus": {
+      "type": "string",
+      "enum": [
+        "active",
+        "on_probation",
+        "terminated",
+        "frozen"
+      ]
+    },
+    "employeeStatus": {
+      "type": "string",
+      "enum": [
+        "active",
+        "on_probation",
+        "terminated",
+        "frozen"
+      ]
+    },
+    "hostName": {
+      "type": "string",
+      "enum": [
+        "claude-code",
+        "cursor",
+        "openclaw",
+        "unknown"
+      ]
+    },
+    "performance": {
+      "type": "object",
+      "required": [
+        "tasks_total",
+        "tasks_success",
+        "tasks_fail"
+      ],
+      "properties": {
+        "tasks_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tasks_success": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tasks_fail": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "trainingHistoryEntry": {
+      "type": "object",
+      "required": [
+        "ts",
+        "action"
+      ],
+      "properties": {
+        "ts": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trainer_id": {
+          "type": "string"
+        },
+        "skill_id": {
+          "type": "string"
+        },
+        "task_id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "skill": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status",
+        "added_at",
+        "tasks_total",
+        "tasks_success",
+        "tasks_fail"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "install_path": {
+          "type": "string"
+        },
+        "source_url": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/$defs/skillStatus"
+        },
+        "added_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "last_used_at": {
+          "type": "string"
+        },
+        "tasks_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tasks_success": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "tasks_fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "notes": {
+          "type": "string"
+        },
+        "cc_scope": {
+          "type": "string",
+          "enum": [
+            "user",
+            "project",
+            "nested",
+            "plugin",
+            "unknown"
+          ]
+        },
+        "cc_invoke": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "manual_only"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "employee": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status",
+        "skills",
+        "primary_skill",
+        "host",
+        "created_by",
+        "added_at",
+        "performance",
+        "training_history"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "$ref": "#/$defs/employeeStatus"
+        },
+        "skills": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "primary_skill": {
+          "type": "string",
+          "minLength": 1
+        },
+        "host": {
+          "$ref": "#/$defs/hostName"
+        },
+        "created_by": {
+          "type": "string",
+          "enum": [
+            "recruited",
+            "trained",
+            "migrated"
+          ]
+        },
+        "role_title": {
+          "type": "string"
+        },
+        "added_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "last_used_at": {
+          "type": "string"
+        },
+        "source_skill_id": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "performance": {
+          "$ref": "#/$defs/performance"
+        },
+        "training_history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trainingHistoryEntry"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

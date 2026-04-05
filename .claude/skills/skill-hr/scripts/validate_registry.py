@@ -9,12 +9,28 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from registry_runtime import load_registry
+
 REQUIRED_TOP = ("skill_hr_version", "updated_at", "skills", "matching")
 REQUIRED_SKILL = ("id", "name", "status", "added_at", "tasks_total", "tasks_success", "tasks_fail")
+REQUIRED_EMPLOYEE = (
+    "id",
+    "name",
+    "status",
+    "skills",
+    "primary_skill",
+    "host",
+    "created_by",
+    "added_at",
+    "performance",
+    "training_history",
+)
 ALLOWED_STATUS = frozenset({"active", "on_probation", "terminated", "frozen"})
 ALLOWED_CC_SCOPE = frozenset({"user", "project", "nested", "plugin", "unknown"})
 ALLOWED_CC_INVOKE = frozenset({"auto", "manual_only"})
 REQUIRED_MATCHING = ("delegate_min_score", "confirm_band_min", "max_trials_per_task_per_skill")
+ALLOWED_HOST = frozenset({"claude-code", "cursor", "openclaw", "unknown"})
+ALLOWED_CREATED_BY = frozenset({"recruited", "trained", "migrated"})
 
 
 def err(msg: str) -> None:
@@ -51,6 +67,7 @@ def validate(data: Any, path: str) -> list[str]:
         return errors
 
     seen: set[str] = set()
+    skill_ids: set[str] = set()
     for i, s in enumerate(skills):
         p = f"{path}.skills[{i}]"
         if not isinstance(s, dict):
@@ -64,6 +81,7 @@ def validate(data: Any, path: str) -> list[str]:
             if sid in seen:
                 errors.append(f"{p}.id: duplicate id '{sid}'")
             seen.add(sid)
+            skill_ids.add(sid)
         st = s.get("status")
         if st not in ALLOWED_STATUS:
             errors.append(f"{p}.status: must be one of {sorted(ALLOWED_STATUS)}")
@@ -87,6 +105,76 @@ def validate(data: Any, path: str) -> list[str]:
                     f"{p}.cc_invoke: must be one of {sorted(ALLOWED_CC_INVOKE)}"
                 )
 
+    employees = data.get("employees")
+    if employees is not None and not isinstance(employees, list):
+        errors.append(f"{path}: 'employees' must be an array when present")
+        return errors
+
+    employee_ids: set[str] = set()
+    for i, employee in enumerate(employees or []):
+        p = f"{path}.employees[{i}]"
+        if not isinstance(employee, dict):
+            errors.append(f"{p}: must be an object")
+            continue
+        for key in REQUIRED_EMPLOYEE:
+            if key not in employee:
+                errors.append(f"{p}: missing '{key}'")
+        employee_id = employee.get("id")
+        if isinstance(employee_id, str):
+            if employee_id in employee_ids:
+                errors.append(f"{p}.id: duplicate id '{employee_id}'")
+            employee_ids.add(employee_id)
+        status = employee.get("status")
+        if status not in ALLOWED_STATUS:
+            errors.append(f"{p}.status: must be one of {sorted(ALLOWED_STATUS)}")
+        host = employee.get("host")
+        if host not in ALLOWED_HOST:
+            errors.append(f"{p}.host: must be one of {sorted(ALLOWED_HOST)}")
+        created_by = employee.get("created_by")
+        if created_by not in ALLOWED_CREATED_BY:
+            errors.append(f"{p}.created_by: must be one of {sorted(ALLOWED_CREATED_BY)}")
+        employee_skills = employee.get("skills")
+        if not isinstance(employee_skills, list) or not employee_skills:
+            errors.append(f"{p}.skills: must be a non-empty array")
+        else:
+            for j, skill_id in enumerate(employee_skills):
+                if not isinstance(skill_id, str):
+                    errors.append(f"{p}.skills[{j}]: must be string")
+                elif skill_id not in skill_ids:
+                    errors.append(f"{p}.skills[{j}]: unknown skill id '{skill_id}'")
+        primary_skill = employee.get("primary_skill")
+        if not isinstance(primary_skill, str) or not primary_skill:
+            errors.append(f"{p}.primary_skill: must be non-empty string")
+        elif primary_skill not in skill_ids:
+            errors.append(f"{p}.primary_skill: unknown skill id '{primary_skill}'")
+        elif isinstance(employee_skills, list) and primary_skill not in employee_skills:
+            errors.append(f"{p}.primary_skill: must appear in skills[]")
+        performance = employee.get("performance")
+        perf_path = f"{p}.performance"
+        if not isinstance(performance, dict):
+            errors.append(f"{perf_path}: must be an object")
+        else:
+            for cnt in ("tasks_total", "tasks_success", "tasks_fail"):
+                if cnt not in performance:
+                    errors.append(f"{perf_path}: missing '{cnt}'")
+                elif not isinstance(performance[cnt], int):
+                    errors.append(f"{perf_path}.{cnt}: must be integer")
+                elif performance[cnt] < 0:
+                    errors.append(f"{perf_path}.{cnt}: must be non-negative")
+        training_history = employee.get("training_history")
+        if not isinstance(training_history, list):
+            errors.append(f"{p}.training_history: must be an array")
+        else:
+            for j, event in enumerate(training_history):
+                event_path = f"{p}.training_history[{j}]"
+                if not isinstance(event, dict):
+                    errors.append(f"{event_path}: must be an object")
+                    continue
+                if "ts" not in event or not isinstance(event["ts"], str):
+                    errors.append(f"{event_path}.ts: must be string")
+                if "action" not in event or not isinstance(event["action"], str):
+                    errors.append(f"{event_path}.action: must be string")
+
     return errors
 
 
@@ -105,7 +193,7 @@ def main() -> int:
         err(f"File not found: {path}")
         return 2
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = load_registry(path)
     except json.JSONDecodeError as e:
         err(f"Invalid JSON: {e}")
         return 1
