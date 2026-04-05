@@ -1,6 +1,6 @@
 # Host adapter: Claude Code
 
-**HR deployment note:** On Claude Code, `skill-hr` runs the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`. Registry and incidents use **workspace** paths from `references/06-state-and-artifacts.md` (`.skill-hr/`) so HR records can live in the repo. In v2, prefer `employees[]` as the assignment layer and use `skills[]` as the shared skill catalog.
+**HR deployment note:** On Claude Code, `skill-hr` runs the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`. Registry and incidents use **workspace** paths from `references/06-state-and-artifacts.md` (`.skill-hr/`) so HR records can live in the repo. In v2, prefer `employees[]` as the assignment layer and use `skills[]` as the shared skill catalog. When an employee has **`soul_path`**, treat that **`SOUL.md` as the orchestration source** for which `SKILL.md` files to read and in what order; plugins and tools still follow the active skill’s instructions once loaded.
 
 ## Source of truth (keep current with upstream)
 

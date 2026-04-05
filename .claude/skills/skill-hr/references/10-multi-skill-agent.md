@@ -52,6 +52,28 @@ Minimum employee shape:
 }
 ```
 
+Optional: add **`soul_path`** (e.g. `.skill-hr/employees/document-ops-01/SOUL.md`) so hosts know where the employee’s orchestration brief lives. Template: [`references/templates/employee-SOUL.template.md`](templates/employee-SOUL.template.md).
+
+## Employee SOUL contract
+
+The **employee SOUL** (`SOUL.md` at `soul_path`) is the runtime brief for **multi-skill composition**. The registry answers *what* skills belong to the employee; the SOUL answers *how* the incumbent should **load and apply** those `SKILL.md` files (order, branching, fallbacks).
+
+### What the SOUL must contain
+
+1. **Identity** — role, scope, tone consistent with HR’s `role_title` / `name`.
+2. **Skill bundle alignment** — every skill the SOUL instructs the host to use must appear in `employees[].skills` (and exist in `skills[]`).
+3. **Load order and rules** — when to read which `SKILL.md` first; sequential vs conditional paths; when to switch skills mid-task.
+4. **`primary_skill` relationship** — `primary_skill` remains the default label for P02/P03 compatibility and for hosts that only load one skill; the SOUL may override sequencing but must not invent skills not in the registry bundle.
+5. **Boundaries** — explicit do / do-not / escalate rules so multi-skill breadth does not become scope creep.
+
+### When `soul_path` is missing (fallback)
+
+If no `soul_path` is set, treat the employee as **single-primary-skill execution**: load the `primary_skill`’s `SKILL.md` only, same as a legacy one-skill incumbent. Secondary skills in `skills[]` are still true for matching and HR narrative but are not auto-invoked unless the host or user explicitly loads them.
+
+### Delegation with SOUL
+
+P03 must tell the incumbent to **read the employee SOUL first** (when present), then follow it to load the right domain `SKILL.md` files. The completion checkpoint may be defined in P03 or reinforced in the SOUL; if both exist, **P03 wins** for the current assignment unless the SOUL explicitly defers to the handoff.
+
 ## Matching rules
 
 When `employees[]` exists:

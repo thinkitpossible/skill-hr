@@ -292,6 +292,10 @@
         "notes": {
           "type": "string"
         },
+        "soul_path": {
+          "type": "string",
+          "description": "Path to this employee's SOUL.md (workspace-relative, e.g. .skill-hr/employees/<id>/SOUL.md). Orchestrates multi-skill load order; optional for backward compatibility."
+        },
         "performance": {
           "$ref": "#/$defs/performance"
         },

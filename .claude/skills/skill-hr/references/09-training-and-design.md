@@ -20,10 +20,11 @@ Every employee design should produce:
 4. `host`
 5. `primary_skill`
 6. `skills[]`
-7. `created_by`
-8. `status` at creation time, usually `on_probation`
-9. a short `notes` field
-10. at least one `training_history[]` event
+7. optional `soul_path` pointing to `.skill-hr/employees/<employee_id>/SOUL.md` when multi-skill orchestration is needed (see `references/templates/employee-SOUL.template.md`)
+8. `created_by`
+9. `status` at creation time, usually `on_probation`
+10. a short `notes` field
+11. at least one `training_history[]` event
 
 ## When to invoke the trainer
 
@@ -33,6 +34,16 @@ Invoke `trainer` when any of these is true:
 - the JD clearly spans multiple competencies that should live in one worker
 - repeated debriefs suggest a prompt, host, or skill-bundle redesign
 - the user explicitly asks to design, train, or evolve an employee
+
+## Employee-fabricator vs trainer
+
+| Situation | Lead agent |
+|-----------|------------|
+| P02 says **`recruit`** (or director: no delegable match, external hire next) | **`employee-fabricator`** — automatic cold-start: target bundle, per-employee `SOUL.md`, **`p04_recruitment_brief`** for **recruiter** |
+| User or director wants **design / retrain** without an immediate forced P04 path, or **Training → TrainingReview** loop | **`trainer`** |
+| Post-debrief **redesign** of an existing employee | **`trainer`** (may later hand to **recruiter** if `requires_recruitment`) |
+
+**employee-fabricator** does not replace **trainer**; it owns the **default** pre-P04建制 when the flow is “bench insufficient → market.”
 
 ## Training states
 

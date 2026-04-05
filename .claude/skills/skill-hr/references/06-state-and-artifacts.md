@@ -47,7 +47,7 @@ Top-level object:
 | State | Meaning |
 |-------|---------|
 | `Intake` | User request received; JD not finalized |
-| `Designing` | Trainer is designing or revising an employee profile |
+| `Designing` | **Trainer** or **employee-fabricator** is designing or revising an employee profile (fabricator: cold-start before P04). May transition to **`Recruiting`** when the draft target employee and P04 brief are ready for market search. |
 | `Training` | Skill bundle, SOUL, or onboarding plan is being prepared |
 | `TrainingReview` | Training output is being reviewed before reuse or delegation |
 | `JDReady` | P01 complete; ready for P02 |
@@ -129,6 +129,7 @@ Top-level object:
 | `last_used_at` | string | no | Last delegated task |
 | `source_skill_id` | string | no | Legacy compatibility field when migrated from a single skill entry |
 | `notes` | string | no | HR notes on scope, reliability, or special handling |
+| `soul_path` | string | no | Workspace-relative path to the employee's `SOUL.md` (recommended: `.skill-hr/employees/<employee_id>/SOUL.md`). Defines role, boundaries, and **when to load which** bundled `SKILL.md`. If omitted, hosts fall back to `primary_skill` only. See `references/10-multi-skill-agent.md`. |
 | `performance` | object | yes | `{tasks_total, tasks_success, tasks_fail}` counters at the employee level |
 | `training_history` | array | yes | Time-ordered training, retraining, and design events |
 
@@ -147,6 +148,7 @@ Top-level object:
 
 - **v1** registries contain `skills[]` only. Treat each active skill entry as a synthetic single-skill employee when a consumer expects `employees[]`.
 - **v2** registries keep `skills[]` as the shared skill catalog and add `employees[]` as the preferred assignment surface.
+- **v2.1 (additive)** employees may include optional `soul_path` linking to a per-employee SOUL that orchestrates multiple skills; older registries without it behave as single-primary-skill execution.
 - Existing tools may continue reading skill-level counters, but new dashboards and assignment logic should prefer `employees[]` when present.
 - See `schemas/registry-v2.schema.json` and `examples/registry-v2.example.json` for the canonical v2 shape.
 
@@ -163,6 +165,7 @@ hr_task_id: HR-20260404-1430-analyze-resume
 hr_task_state: Debrief
 task_summary: "User wants resume parsing to structured JSON"
 jd_role_title: "Resume ingestion analyst"
+selected_employee_id: resume-analyst-01
 selected_skill_id: interview-designer
 selected_skill_name: interview-designer
 match_score: 78
@@ -194,6 +197,7 @@ Body sections (headings):
 
 Use these when you need to explain why the framework stopped or continued:
 
+- `selected_employee_id` — when delegation used the `employees[]` layer; complements `selected_skill_id` (often the `primary_skill` id for P02 compatibility)
 - `hr_task_id` — links to `.skill-hr/hr_tasks.json` when using multi-agent mode
 - `hr_task_state` — snapshot of board state when the incident was written
 - `phase` — current or terminal phase, e.g. `matching`, `recruitment`, `delegation`, `debrief`, `escalation`

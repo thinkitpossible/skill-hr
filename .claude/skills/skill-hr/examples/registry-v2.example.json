@@ -63,6 +63,7 @@
       "host": "claude-code",
       "created_by": "trained",
       "role_title": "Cross-document operations employee",
+      "soul_path": ".skill-hr/employees/document-ops-01/SOUL.md",
       "added_at": "2026-04-01T10:15:00Z",
       "last_used_at": "2026-04-04T10:15:00Z",
       "notes": "Designed for office-document workflows that span extraction, editing, and tabular output.",

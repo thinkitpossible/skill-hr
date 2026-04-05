@@ -33,6 +33,35 @@ ALLOWED_HOST = frozenset({"claude-code", "cursor", "openclaw", "unknown"})
 ALLOWED_CREATED_BY = frozenset({"recruited", "trained", "migrated"})
 
 
+def soul_path_warnings(data: Any, registry_path: Path) -> list[str]:
+    """If registry lives at `<workspace>/.skill-hr/registry.json`, warn when soul_path files are missing.
+
+    Non-fatal: CI or fresh checkouts may not have created employee SOUL files yet.
+    """
+    if registry_path.parent.name != ".skill-hr":
+        return []
+    workspace_root = registry_path.parent.parent
+    employees = data.get("employees")
+    if not isinstance(employees, list):
+        return []
+    out: list[str] = []
+    for i, employee in enumerate(employees):
+        if not isinstance(employee, dict):
+            continue
+        sp = employee.get("soul_path")
+        if not isinstance(sp, str) or not sp.strip():
+            continue
+        rel = sp.strip().replace("\\", "/")
+        # workspace-relative path as stored in registry
+        candidate = (workspace_root / rel).resolve()
+        if not candidate.is_file():
+            eid = employee.get("id", f"[{i}]")
+            out.append(
+                f"WARN: employees[{i}] id={eid!r} soul_path {sp!r} not found at {candidate}"
+            )
+    return out
+
+
 def err(msg: str) -> None:
     print(msg, file=sys.stderr)
 
@@ -202,6 +231,8 @@ def main() -> int:
         for e in errors:
             err(e)
         return 1
+    for w in soul_path_warnings(data, path):
+        err(w)
     print(f"OK: {path}")
     return 0
 

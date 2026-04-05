@@ -1,6 +1,6 @@
 # Host adapter: OpenClaw
 
-**HR deployment note:** On OpenClaw, treat **`skill-hr` as the dedicated HR function** for your skill workforce—the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`, with `.skill-hr/` registry and incidents as the **HR record** for assignments (host-agnostic paths; see `references/06-state-and-artifacts.md`). In v2, route normal work through `employees[]` and use `skills[]` as the underlying capability catalog.
+**HR deployment note:** On OpenClaw, treat **`skill-hr` as the dedicated HR function** for your skill workforce—the same JD → match → recruit → handoff → performance / termination loop as in `SKILL.md`, with `.skill-hr/` registry and incidents as the **HR record** for assignments (host-agnostic paths; see `references/06-state-and-artifacts.md`). In v2, route normal work through `employees[]` and use `skills[]` as the underlying capability catalog. For employees with **`soul_path`**, use **`SOUL.md` as the orchestration layer** over multiple `SKILL.md` files; plugins and OpenClaw tools follow the skill that is actually loaded for each phase.
 
 ## Execution contract
 
@@ -69,7 +69,7 @@ Useful **`skills.load`** knobs (defaults may change—see [Skills config](https:
 
 - Prefer **`openclaw skills list`** for the effective snapshot on that session.
 - For bench analysis, you may still enumerate skill directories under the roots above and read each **`SKILL.md`** frontmatter (`name`, `description`).
-- Merge with **project** `.skill-hr/registry.json` when the workspace uses HR state in-repo. If `employees[]` exists, prefer ranking employee bundles after the raw skill discovery step.
+- Merge with **project** `.skill-hr/registry.json` when the workspace uses HR state in-repo. If `employees[]` exists, prefer ranking employee bundles after the raw skill discovery step. After delegation, if the chosen employee has **`soul_path`**, read that file from the workspace before chaining domain `SKILL.md` loads per `references/10-multi-skill-agent.md`.
 
 ## Safe agent actions vs user-gated actions
 

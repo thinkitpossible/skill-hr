@@ -3,6 +3,9 @@
 
 Stores data under workspace `.skill-hr/hr_tasks.json`. Use this CLI instead of
 hand-editing the file (see agents/GLOBAL.md).
+
+Pre-external-recruit path: after P02 `recruit`, task board may transition
+`Matching → Designing` (employee-fabricator) → `Recruiting` (recruiter / P04).
 """
 
 from __future__ import annotations
@@ -43,11 +46,11 @@ STATES = frozenset(
 # Directed edges: from_state -> allowed to_states
 _VALID_TRANSITIONS: dict[str, frozenset[str]] = {
     "Intake": frozenset({"Designing", "JDReady", "Escalation"}),
-    "Designing": frozenset({"Training", "Matching", "Escalation"}),
+    "Designing": frozenset({"Training", "Matching", "Recruiting", "Escalation"}),
     "Training": frozenset({"TrainingReview", "Escalation"}),
     "TrainingReview": frozenset({"Matched", "Designing", "Matching", "Escalation"}),
     "JDReady": frozenset({"Matching", "Designing", "Escalation"}),
-    "Matching": frozenset({"Matched", "Recruiting", "Escalation"}),
+    "Matching": frozenset({"Matched", "Designing", "Recruiting", "Escalation"}),
     "Recruiting": frozenset({"Vetting", "Escalation"}),
     "Vetting": frozenset({"Matched", "Recruiting", "Escalation"}),
     "Matched": frozenset({"Delegated", "Escalation"}),
@@ -63,6 +66,28 @@ _VALID_TRANSITIONS: dict[str, frozenset[str]] = {
 
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+# #region agent log
+def _agent_debug_log(hypothesis_id: str, message: str, data: dict[str, Any]) -> None:
+    """Append one NDJSON line for debug sessions (workspace `debug-aa05ba.log`)."""
+    try:
+        root = find_workspace_root()
+        log_path = root / "debug-aa05ba.log"
+        payload: dict[str, Any] = {
+            "sessionId": "aa05ba",
+            "hypothesisId": hypothesis_id,
+            "message": message,
+            "data": data,
+            "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
+        }
+        with log_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
+# #endregion
 
 
 def find_workspace_root(start: Path | None = None, *, ensure: bool = False) -> Path:
@@ -345,6 +370,13 @@ def main() -> int:
     p_list.set_defaults(func=cmd_list)
 
     args = p.parse_args()
+    # #region agent log
+    _agent_debug_log(
+        "H-boundary",
+        "hr_dispatch invoked",
+        {"cmd": getattr(args, "cmd", None)},
+    )
+    # #endregion
     try:
         return int(args.func(args))
     except FileNotFoundError as e:

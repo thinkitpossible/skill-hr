@@ -34,16 +34,17 @@ Paths: when the skill is installed as `skill-hr/`, use `skill-hr/scripts/hr_disp
 
 ## Permission matrix (who may invoke whom)
 
-| From / To | hr-director | job-analyst | talent-assessor | recruiter | compliance | onboarder | perf-manager | trainer | hris-admin |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **hr-director** | — | invoke | invoke | invoke | invoke | invoke | invoke | invoke | read |
-| **job-analyst** | return only | — | — | — | — | — | — | — | read |
-| **talent-assessor** | return only | — | — | — | — | — | — | — | read |
-| **recruiter** | return only | — | — | — | invoke | — | — | — | read/write |
-| **compliance** | return only | — | — | — | — | — | — | — | read/write |
-| **onboarder** | return only | — | — | — | — | — | — | — | read/write |
-| **perf-manager** | return only | — | — | — | invoke | — | — | invoke | read/write |
-| **trainer** | return only | — | — | invoke | invoke | — | — | — | read/write |
+| From / To | hr-director | job-analyst | talent-assessor | recruiter | compliance | onboarder | perf-manager | trainer | employee-fabricator | hris-admin |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **hr-director** | — | invoke | invoke | invoke | invoke | invoke | invoke | invoke | invoke | read |
+| **job-analyst** | return only | — | — | — | — | — | — | — | — | read |
+| **talent-assessor** | return only | — | — | — | — | — | — | — | — | read |
+| **recruiter** | return only | — | — | — | invoke | — | — | — | — | read/write |
+| **compliance** | return only | — | — | — | — | — | — | — | — | read/write |
+| **onboarder** | return only | — | — | — | — | — | — | — | — | read/write |
+| **perf-manager** | return only | — | — | — | invoke | — | — | invoke | — | read/write |
+| **trainer** | return only | — | — | invoke | invoke | — | — | — | — | read/write |
+| **employee-fabricator** | return only | — | — | — | — | — | — | — | — | read |
 
 - **invoke**: only **hr-director** may treat another agent as the next sub-step in a run, except **recruiter → compliance**, **perf-manager → compliance**, and **trainer → recruiter/compliance** when employee design requires new external skills or safety review.
 - **hris-admin**: invoked conceptually for registry/incidents; in single-agent hosts, one process loads `references/06-state-and-artifacts.md` and updates `.skill-hr/` per that doc.
@@ -84,6 +85,7 @@ Paths: when the skill is installed as `skill-hr/`, use `skill-hr/scripts/hr_disp
 | `hr-director` | `hr-director/` | Orchestration |
 | `job-analyst` | `job-analyst/` | P01 JD |
 | `talent-assessor` | `talent-assessor/` | P02 match |
+| `employee-fabricator` | `employee-fabricator/` | Cold-start target employee + P04 brief |
 | `recruiter` | `recruiter/` | P04 market |
 | `compliance` | `compliance/` | Vetting |
 | `onboarder` | `onboarder/` | P03 handoff |

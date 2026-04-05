@@ -181,7 +181,8 @@ class SkillHrStore:
                     "frontmatter": incident["frontmatter"],
                 }
                 for incident in incidents
-                if incident["frontmatter"].get("selected_skill_id") in employee.get("skills", [])
+                if incident["frontmatter"].get("selected_employee_id") == employee.get("id")
+                or incident["frontmatter"].get("selected_skill_id") in employee.get("skills", [])
             ]
             employees.append(
                 {
