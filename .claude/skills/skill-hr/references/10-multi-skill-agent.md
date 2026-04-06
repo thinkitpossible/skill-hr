@@ -54,6 +54,18 @@ Minimum employee shape:
 
 Optional: add **`soul_path`** (e.g. `.skill-hr/employees/document-ops-01/SOUL.md`) so hosts know where the employee’s orchestration brief lives. Template: [`references/templates/employee-SOUL.template.md`](templates/employee-SOUL.template.md).
 
+Optional registry field **`task_archetype`** (string): one-line label for the **class of user tasks** this employee serves (keep aligned with `role_title` / `notes`). See `schemas/registry-v2.schema.json` and `references/06-state-and-artifacts.md`.
+
+## Task-type specialization (task archetype)
+
+Each `employees[]` row should be a **task-type specialist**: one **primary class of work** (the **task archetype**), not a grab bag of unrelated missions.
+
+1. **Declare the archetype** — In prose (`notes`, `role_title`, optional `task_archetype`) and in the per-employee SOUL (**Task archetype** section in the template), state the **single main scenario** this employee is for. If the host must cover multiple unrelated scenarios, prefer **multiple employees** or **separate P01 `workstreams[]`**, each staffed to a specialist.
+2. **Skill closure** — For that archetype, list every **must-have capability** (competencies, deliverable shapes, tooling). **Each** must map to a **real** `skills[].id` in `employees[].skills`. The bundle is the **closure** for the archetype: executing typical tasks in that class should not routinely force mid-task handoffs because a skill is missing.
+3. **Anti-patterns** — Do not inflate `skills[]` unrelated to the archetype just to raise P02 scores. Do not omit a skill that is **routinely** needed for the archetype (that causes churn and re-recruitment). The employee SOUL should document **which skill covers which capability** (see template **技能闭包声明**).
+
+**Trainer** and **employee-fabricator** (see `references/09-training-and-design.md`, `references/prompts/P07-design-agent.md`): when creating or extending an employee, produce a written **closure checklist** — task archetype → required capabilities → skill id per row — and ensure the draft `skills[]` and SOUL match it before handoff.
+
 ## Employee SOUL contract
 
 The **employee SOUL** (`SOUL.md` at `soul_path`) is the runtime brief for **multi-skill composition**. The registry answers *what* skills belong to the employee; the SOUL answers *how* the incumbent should **load and apply** those `SKILL.md` files (order, branching, fallbacks).
@@ -73,6 +85,15 @@ If no `soul_path` is set, treat the employee as **single-primary-skill execution
 ### Delegation with SOUL
 
 P03 must tell the incumbent to **read the employee SOUL first** (when present), then follow it to load the right domain `SKILL.md` files. The completion checkpoint may be defined in P03 or reinforced in the SOUL; if both exist, **P03 wins** for the current assignment unless the SOUL explicitly defers to the handoff.
+
+## Workstreams vs one bundled employee
+
+When P01 produces **`workstreams[]`**:
+
+- **Multiple incumbents / handoffs** — Use separate streams when **separation of concerns** matters (e.g. compliance vs implementation), **different completion checkpoints**, or when parallelizing reduces calendar time without shared context. Prefer **one task-type employee per stream** (each with its own **skill closure** for that stream’s archetype) when streams correspond to different missions.
+- **One employee + `soul_path`** — Prefer a **single** multi-skill employee when the same thread should **retain context** across skills, handoffs would lose state, or the “employee” is really **one** task archetype whose closure is exactly the bundled skills with a defined load order in SOUL.
+
+If unsure, favor **streams** when failure modes are independent; favor **bundle + SOUL** when integration and narrative continuity dominate **and** the work still fits **one** task archetype.
 
 ## Matching rules
 
@@ -136,3 +157,5 @@ Common actions:
 - **Employee equals folder name only**: a host folder may store skills, not the worker abstraction.
 - **Duplicate employee records for every task**: reuse ids across assignments and track history instead.
 - **Multi-skill by string stuffing**: do not pretend an employee is multi-skill unless each referenced skill is real and available in `skills[]`.
+- **One employee, many unrelated archetypes**: do not use one SOUL or one registry row to cover unrelated task classes; split employees or use `workstreams[]`.
+- **Incomplete closure**: do not assign an employee to an archetype when `skills[]` omits a routinely required capability for that archetype.

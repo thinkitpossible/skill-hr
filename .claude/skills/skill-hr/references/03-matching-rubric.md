@@ -10,7 +10,7 @@ Allocate points and **document sub-scores** on every P02b row (`subscores` in JS
 |-----------|------------|----------|----------|
 | Outcome fit | 40 | `outcome_fit` | Employee or skill text covers the **same deliverables** as the JD, not just shared keywords |
 | Competency coverage | 30 | `competency_coverage` | Each `must_have` mapped in coverage matrix; multi-skill coverage is allowed when one employee owns the bundle |
-| Tool / stack fit | 15 | `tool_stack_fit` | Languages, CLIs, MCP, browsers align with `tools_and_access` |
+| Tool / stack fit | 15 | `tool_stack_fit` | Languages, CLIs, MCP, browsers align with `tools_and_access` and, when present, **`jd.capability_slots[]`** **`integration_surface`** + **`must_satisfy`** per slot (see [`prompts/P02-match-installed.md`](prompts/P02-match-installed.md) §Capability slots) |
 | Quality / safety posture | 10 | `quality_safety` | Validation, scope discipline, safe patterns in skill text |
 | Freshness / trust | 5 | `freshness_trust` | Maintainer signal, narrow scope, no red flags |
 

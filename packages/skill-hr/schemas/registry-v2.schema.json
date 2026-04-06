@@ -62,10 +62,63 @@
       "items": {
         "$ref": "#/$defs/employee"
       }
+    },
+    "termination_log": {
+      "type": "array",
+      "description": "Append-only audit of offboarded skills/employees; P02/P04 must exclude entries with rehire_allowed false regardless of status typos.",
+      "items": {
+        "$ref": "#/$defs/terminationLogEntry"
+      }
     }
   },
   "additionalProperties": true,
   "$defs": {
+    "terminationLogEntry": {
+      "type": "object",
+      "required": [
+        "kind",
+        "id",
+        "terminated_at",
+        "reason",
+        "rehire_allowed"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "skill",
+            "employee"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "terminated_at": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "incident_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rehire_allowed": {
+          "type": "boolean",
+          "description": "If false (default at termination), never auto-match or auto-recruit; user may set true with rationale in registry notes to allow re-entry."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "When kind is skill, optional provenance for P04 dedupe against market candidates."
+        }
+      },
+      "additionalProperties": true
+    },
     "skillStatus": {
       "type": "string",
       "enum": [
@@ -278,6 +331,10 @@
         },
         "role_title": {
           "type": "string"
+        },
+        "task_archetype": {
+          "type": "string",
+          "description": "Optional one-line label for the class of user tasks this employee serves; align with role_title/notes and references/10-multi-skill-agent.md task-type specialization."
         },
         "added_at": {
           "type": "string",

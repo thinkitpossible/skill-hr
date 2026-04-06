@@ -80,9 +80,26 @@ Top-level object:
     "max_trials_per_task_per_skill": 2
   },
   "skills": [],
-  "employees": []
+  "employees": [],
+  "termination_log": []
 }
 ```
+
+### `termination_log[]` item (v2.2 additive)
+
+Immutable-style **audit** of skills and employees removed from the auto-hire pool. Used with `skills[].status` / `employees[].status`: P02 and P04 must treat an id as **do-not-rehire** when any log entry has `rehire_allowed: false`, even if status was edited by mistake.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `kind` | string | yes | `skill` \| `employee` |
+| `id` | string | yes | `skills[].id` or `employees[].id` |
+| `terminated_at` | string (ISO-8601) | yes | When termination was recorded |
+| `reason` | string | yes | Short cause (align with P06 / `root_cause_class` when applicable) |
+| `incident_ids` | string[] | no | Related incident ids or filenames |
+| `rehire_allowed` | boolean | yes | Default **`false`** at termination. Only if the user explicitly allows re-entry, set `true` and document rationale in registry or incident notes. |
+| `source_url` | string | no | For `kind: skill`, optional provenance so P04 can skip recruiting the same upstream package. |
+
+**Append on terminate:** each P06 (or perf-manager termination path) **appends** one row per terminated skill and, when delegation used `employees[]`, one row for the employee. Do not delete historical rows; use `rehire_allowed: true` plus status change if the user rehires.
 
 ### `skills[]` item
 
@@ -125,6 +142,7 @@ Top-level object:
 | `host` | string | yes | `claude-code` \| `cursor` \| `openclaw` \| `unknown` |
 | `created_by` | string | yes | `recruited` \| `trained` \| `migrated` |
 | `role_title` | string | no | Short position label used in dashboards or incidents |
+| `task_archetype` | string | no | **v2.3 (additive)** One-line label for the **class of user tasks** this employee specializes in; must align with `skills[]` as a **skill closure** for that archetype per `references/10-multi-skill-agent.md` |
 | `added_at` | string (ISO-8601) | yes | When this employee was registered |
 | `last_used_at` | string | no | Last delegated task |
 | `source_skill_id` | string | no | Legacy compatibility field when migrated from a single skill entry |
@@ -149,6 +167,8 @@ Top-level object:
 - **v1** registries contain `skills[]` only. Treat each active skill entry as a synthetic single-skill employee when a consumer expects `employees[]`.
 - **v2** registries keep `skills[]` as the shared skill catalog and add `employees[]` as the preferred assignment surface.
 - **v2.1 (additive)** employees may include optional `soul_path` linking to a per-employee SOUL that orchestrates multiple skills; older registries without it behave as single-primary-skill execution.
+- **v2.2 (additive)** optional `termination_log[]` for do-not-rehire audit; omit or use `[]` in older registries.
+- **v2.3 (additive)** optional `employees[].task_archetype` for task-type specialization labels; omit in older registries.
 - Existing tools may continue reading skill-level counters, but new dashboards and assignment logic should prefer `employees[]` when present.
 - See `schemas/registry-v2.schema.json` and `examples/registry-v2.example.json` for the canonical v2 shape.
 
@@ -178,10 +198,14 @@ host_actions_taken:
   - verified output artifact
 approval_gates_hit: []
 outcome: success
+delivery_quality: meets_bar
 root_cause_class: n/a
 registry_updated: true
+stakeholder_summary_included: true
 ---
 ```
+
+`stakeholder_summary_included` is optional: set `true` when body sections 6–9 follow the P05 stakeholder brief shape.
 
 Body sections (headings):
 
@@ -190,13 +214,17 @@ Body sections (headings):
 3. **Match rationale** — scores, alternatives considered.
 4. **Handoff** — what was sent to the incumbent (P03 summary).
 5. **Execution trace** — phases reached, host actions taken, approvals consumed, checkpoints attempted.
-6. **Result** — deliverables, errors, partial work, and completion evidence.
-7. **Next actions** — retain / probation / terminate / escalate.
+6. **Stakeholder summary** — one-sentence headline: outcome + contribution to the user’s goal (honest for `partial` / `fail`; still state what moved forward). Should mirror the opening of P05 `user_message`.
+7. **Work outcomes** — bullets mapped to JD **success_criteria**; each line cites **evidence** (path, command, test, or observation). This is the auditable deliverable list—not a dump of raw errors. Include **one sentence** on **`delivery_quality`** vs JD **`excellence_bar`** (per P05).
+8. **Process artifacts and evidence** — list or table: workspace-relative **path** \| one-line **summary** (purpose). Include **this incident file** once the path is known, plus drafts, logs, `.skill-hr/hr_tasks.json` excerpts if useful, and any handoff or trace files.
+9. **Issues and gaps** — execution-side blockers, unmet criteria, environment limits, skill-scope gaps; align with YAML `root_cause_class`. No unsupported blame.
+10. **Next actions** — retain / probation / retrain / terminate / escalate; one primary recommendation plus any registry or HR follow-ups.
 
 ## Optional incident fields
 
 Use these when you need to explain why the framework stopped or continued:
 
+- `stakeholder_summary_included` — `true` when sections 6–9 are populated per P05 (audit / dashboard hint)
 - `selected_employee_id` — when delegation used the `employees[]` layer; complements `selected_skill_id` (often the `primary_skill` id for P02 compatibility)
 - `hr_task_id` — links to `.skill-hr/hr_tasks.json` when using multi-agent mode
 - `hr_task_state` — snapshot of board state when the incident was written
@@ -206,6 +234,8 @@ Use these when you need to explain why the framework stopped or continued:
 - `approval_gates_hit` — approvals requested or blocking gates encountered
 - `completion_checkpoint` — the checkpoint the incumbent was expected to reach
 - `completion_evidence` — artifact paths, commands, tests, or observed host state showing execution happened
+- `delivery_quality` — `exceeds_bar` \| `meets_bar` \| `minimal_compliance` \| `n/a` (P05); mirror in JSONL when used
+- `workstream_id` — when debriefing a single stream from P01 `workstreams[]`
 
 These fields are optional and additive; they exist so the trace can live in incidents instead of chat.
 

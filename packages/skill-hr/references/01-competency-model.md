@@ -33,6 +33,10 @@ Do **not** install or delegate if any veto fires unless the user explicitly acce
 
 On veto: document in incident, set recruitment to **halt**, escalate per `07-escalation.md`.
 
+## Platform research and access (P01 / P04)
+
+When the JD involves **social, forums, logged-in apps, or non-indexed surfaces**, read [`11-research-and-platform-access.md`](11-research-and-platform-access.md). Phrase `must_have_competencies` and optional `capability_slots[].integration_surface` so matching does not collapse to “generic web search.” Escalate **`risk_notes`** for ToS, credentials, and automation policy; recruitment must not treat circumvention as a feature.
+
 ## Soft penalties (reduce score, do not auto-veto)
 
 - Obsolete dependencies or unmaintained repo (&gt;2y silence) → cap score at 65 unless user overrides.

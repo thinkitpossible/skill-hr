@@ -43,10 +43,11 @@ Execute in order. Record **which references were used** in the incident or trace
 - **Default behavior:** keep moving through JD, matching, delegation or recruitment, debrief, and artifact writeback until you hit a real policy gate or a proven blocker.
 - **OpenClaw:** completion-first is the default. If a vetted, documented host action can be executed by the agent, do it and continue the flow before replying.
 - **User-facing updates:** report outcomes, artifacts, approvals needed, or blockers with evidence. Avoid "first do X, then Y" responses unless execution truly must stop.
+- **Debrief / closure:** the user-visible summary must include **work outcomes**, **process file references with one-line summaries**, and **execution-side issues** side by side per [references/prompts/P05-trial-and-debrief.md](references/prompts/P05-trial-and-debrief.md) and incident sections 6–10 in [references/06-state-and-artifacts.md](references/06-state-and-artifacts.md)—not problems alone.
 - **Trace location:** detailed phase-by-phase narration belongs in `.skill-hr/incidents/` or another structured trace, not in the main reply.
 - **Escalation:** if you cannot safely continue, follow `references/07-escalation.md` and still leave behind a partial artifact or blocker record.
 
-1. **Intake → JD** — Read [references/02-jd-spec.md](references/02-jd-spec.md) and apply [references/prompts/P01-intake-to-jd.md](references/prompts/P01-intake-to-jd.md). Glossary: [references/00-glossary.md](references/00-glossary.md).
+1. **Intake → JD** — Read [references/02-jd-spec.md](references/02-jd-spec.md) and apply [references/prompts/P01-intake-to-jd.md](references/prompts/P01-intake-to-jd.md). For research or platform-heavy tasks, also load [references/11-research-and-platform-access.md](references/11-research-and-platform-access.md). Glossary: [references/00-glossary.md](references/00-glossary.md). **Multi-stream programs:** when P01 emits non-empty **`workstreams[]`**, drive **P02 → P03 → execution → P05** per stream in **`depends_on` order**; use **`parallel_group`** only when there is no dependency conflict. Record **`workstream_id`** in `.skill-hr/incidents/` and `hr_tasks.json` `progress_log`. If **`orchestration_notes`** call for a **single multi-skill employee**, run **one** P02 against a synthesized handoff that covers the bundle per [references/10-multi-skill-agent.md](references/10-multi-skill-agent.md) (employee-fabricator / trainer as needed).
 2. **Match installed pool** — [references/03-matching-rubric.md](references/03-matching-rubric.md) + [references/prompts/P02-match-installed.md](references/prompts/P02-match-installed.md) + [references/matching-lexicon.md](references/matching-lexicon.md) (P02a recall). Competencies and vetoes: [references/01-competency-model.md](references/01-competency-model.md). P02 JSON shape: [schemas/p02-output.schema.json](schemas/p02-output.schema.json). **Claude Code:** follow the P02 discovery checklist in [references/hosts/claude-code.md](references/hosts/claude-code.md) so nested `.claude/skills/`, personal skills, `--add-dir`, and plugin names are not missed.
 3. **Branch**
    - **Design / retrain employee** — [references/09-training-and-design.md](references/09-training-and-design.md) + [references/10-multi-skill-agent.md](references/10-multi-skill-agent.md) + [references/prompts/P07-design-agent.md](references/prompts/P07-design-agent.md) + [references/prompts/P08-training-plan.md](references/prompts/P08-training-plan.md).
@@ -90,6 +91,7 @@ Detect environment and follow the matching host file for skill paths, config key
 | `references/08-framework-evaluation.md` | Full-stack evaluation plan (L0–L7) |
 | `references/09-training-and-design.md` | Employee design / retraining workflow |
 | `references/10-multi-skill-agent.md` | Multi-skill employee model + SOUL contract |
+| `references/11-research-and-platform-access.md` | Research surfaces, platform access, P04/compliance |
 | `references/templates/employee-SOUL.template.md` | Template for per-employee `SOUL.md` (`soul_path`) |
 | `references/prompts/P01`–`P06` | Executable prompt templates |
 | `references/prompts/P07`–`P08` | Employee design and training templates |
@@ -98,6 +100,7 @@ Detect environment and follow the matching host file for skill paths, config key
 | `references/hosts/coze.md` | Coze / plugin-first hosts (tool-before-chatter) |
 | `benchmarks/matching/` | Gold cases + metric definitions for P02 |
 | `schemas/p02-output.schema.json` | Machine schema for P02 output |
+| `schemas/p05-output.schema.json` | Suggested machine schema for P05 debrief JSON |
 | `agents/GLOBAL.md` | Multi-agent shared rules, permissions, safety |
 | `agents/*/SOUL.md` | Per-role agent briefs (director, analyst, trainer, assessor, …) |
 | `scripts/hr_dispatch.py` | HR task state machine + `flow` / `progress` audit CLI |

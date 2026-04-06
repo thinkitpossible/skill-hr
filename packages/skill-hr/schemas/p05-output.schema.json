@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skill-hr.local/schemas/p05-output.schema.json",
+  "title": "skill-hr P05 debrief output (optional machine shape)",
+  "description": "Suggested JSON shape for hosts that consume P05 programmatically. Prompt source of truth: references/prompts/P05-trial-and-debrief.md",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "outcome",
+    "delivery_quality",
+    "root_cause_class",
+    "next_action",
+    "user_message"
+  ],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": ["success", "partial", "fail"]
+    },
+    "delivery_quality": {
+      "type": "string",
+      "enum": ["exceeds_bar", "meets_bar", "minimal_compliance", "n/a"]
+    },
+    "delivery_quality_rationale": {
+      "type": "string",
+      "description": "One or two sentences citing evidence vs JD excellence_bar and success_criteria"
+    },
+    "root_cause_class": {
+      "type": "string",
+      "enum": ["skill_limit", "user_spec", "environment", "wrong_match", "n/a"]
+    },
+    "next_action": {
+      "type": "string",
+      "enum": ["retain", "retrain_prompt", "terminate", "escalate"]
+    },
+    "completion_evidence": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "stakeholder_brief": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "incident_markdown": { "type": "string" },
+    "registry_patch": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "user_message": { "type": "string", "minLength": 1 }
+  }
+}

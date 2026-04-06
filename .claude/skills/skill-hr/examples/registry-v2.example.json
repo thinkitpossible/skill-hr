@@ -7,6 +7,17 @@
     "confirm_band_min": 60,
     "max_trials_per_task_per_skill": 2
   },
+  "termination_log": [
+    {
+      "kind": "skill",
+      "id": "legacy-bad-skill",
+      "terminated_at": "2026-03-01T12:00:00Z",
+      "reason": "wrong_match after max trials",
+      "incident_ids": ["20260301-1200-legacy-bad-skill"],
+      "rehire_allowed": false,
+      "source_url": "https://example.com/legacy-bad-skill"
+    }
+  ],
   "skills": [
     {
       "id": "pdf",
@@ -63,6 +74,7 @@
       "host": "claude-code",
       "created_by": "trained",
       "role_title": "Cross-document operations employee",
+      "task_archetype": "Office-document pipelines (extract PDF, edit DOCX, tabular XLSX deliverables)",
       "soul_path": ".skill-hr/employees/document-ops-01/SOUL.md",
       "added_at": "2026-04-01T10:15:00Z",
       "last_used_at": "2026-04-04T10:15:00Z",

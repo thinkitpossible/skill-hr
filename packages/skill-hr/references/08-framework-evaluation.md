@@ -75,6 +75,8 @@ Optional: `python packages/skill-hr/scripts/run_matching_benchmark_llm.py` (Open
 
 **Gate:** Decision accuracy and P@1 (or P@3) ≥ agreed bar; investigate every row in the script’s failure list.
 
+**Capability slots (L2 extension):** For gold JDs that include **`capability_slots[]`**, the judge or automated checker should verify P02 **`gaps` / `evidence`** name **`slot_id`** coverage and that **`tool_stack_fit`** reflects **`integration_surface`** (see [`prompts/P02-match-installed.md`](prompts/P02-match-installed.md) §Capability slots). Sample cases: `b23_social_platform_research`, `b24_deck_pipeline_recruit` in [`benchmarks/matching/cases.jsonl`](benchmarks/matching/cases.jsonl).
+
 ---
 
 ## L3 — P03 / P04 (handoff & market brief)

@@ -13,10 +13,11 @@
 > **Too many skills installed—still guessing who to dispatch on each task?**  
 > **Stop stacking plugins; hire an HR function for your host.**
 
-- **Structured JDs**: every assignment starts as a job description (P01), then you pick who runs it.
+- **Structured JDs**: every assignment starts as a job description (P01), then you pick who runs it; supports **`workstreams[]`** programs (drive P02→P03→execution→P05 per stream using `depends_on` / `parallel_group`).
 - **Scored internal bench**: installed skills are matched with a rubric (P02), not gut feel.
-- **Recruiting + records**: gaps go through market briefs and vetting (P04); **registry + incidents** are your HRIS; default is **logical termination** (`terminated`); **physical uninstall only after you explicitly OK it**.
-- **Workforce upgrade**: `registry.json` now supports first-class multi-skill **`employees[]`**, plus a dedicated **`trainer`** role for employee design and retraining.
+- **Recruiting + records**: on weak/no match, **`employee-fabricator`** cold-starts the target employee and a P04 brief before external recruit; then market briefs and vetting (P04); **registry + incidents** are your HRIS; default is **logical termination** (`terminated`); **physical uninstall only after you explicitly OK it**.
+- **Workforce upgrade**: `registry.json` supports first-class multi-skill **`employees[]`** (see [`registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json)); **`trainer`** owns design and retraining (P07/P08).
+- **Research / platform-heavy tasks**: P01 can also load [`11-research-and-platform-access.md`](packages/skill-hr/references/11-research-and-platform-access.md) (surfaces, access, compliance).
 - **Multi-agent HR department (optional)**: besides “one session runs the whole flow,” you can split by role—each persona has a `SOUL.md` under [`agents/`](packages/skill-hr/agents/); shared rules in [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md). Task board and legal state transitions go through [`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) into **`.skill-hr/hr_tasks.json`** (see [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)).
 
 Open-source **meta [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**: treat Skills as a workforce with headcount, hiring, and performance—**executable people ops**, not a throwaway metaphor. The installable bundle lives under [`packages/skill-hr/`](packages/skill-hr/).
@@ -112,7 +113,7 @@ Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when*
 - **No paper trail on failure**—who is reliable, on probation, or should be logically fired stays fuzzy.
 - **“Delete skill” is ambiguous**—must separate **removing from the dispatch pool** from **deleting directories on disk**.
 
-skill-hr encodes the workflow in [`SKILL.md`](packages/skill-hr/SKILL.md) and `references/`, driven by prompt templates **P01–P06**, with workspace state under **`.skill-hr/`** (see [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)).
+skill-hr encodes the workflow in [`SKILL.md`](packages/skill-hr/SKILL.md) and `references/`, driven by prompt templates **P01–P08** (P01–P06 core flow; P07/P08 design and training), with workspace state under **`.skill-hr/`** (see [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)).
 
 ---
 
@@ -127,10 +128,12 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 | `hr-director` | Orchestration, user comms, branch decisions |
 | `job-analyst` | P01 job description / JD |
 | `talent-assessor` | P02 internal matching and scoring |
+| `employee-fabricator` | Cold-start target multi-skill employee; P04 brief before external recruit |
 | `recruiter` | P04 market search and install coordination |
 | `compliance` | Safety and veto gates |
 | `onboarder` | P03 delegation and handoff package |
 | `perf-manager` | P05 debrief / P06 termination |
+| `trainer` | Employee design / retraining (P07/P08) |
 | `hris-admin` | Registry and incidents discipline |
 
 - **Everyone reads**: [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md) (permission matrix, red lines, `hr_dispatch.py` usage)
@@ -147,6 +150,7 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 |------|--------|-------|
 | **Claude Code** | Primary | Paths, nested `.claude/skills/`, `--add-dir`, plugin discovery: [`hosts/claude-code.md`](packages/skill-hr/references/hosts/claude-code.md). Pair P02 with the disk scan script when helpful. |
 | **OpenClaw** | Primary | Deploy this bundle as **dedicated HR for skills**; completion-first semantics below. See [`hosts/openclaw.md`](packages/skill-hr/references/hosts/openclaw.md). |
+| **Coze** | Reference | Plugin-first hosts and tool-before-chatter patterns: [`hosts/coze.md`](packages/skill-hr/references/hosts/coze.md). |
 | **Cursor** | Optional | Project rules decide when to load skill-hr—[`.cursor/rules/skill-hr-always.mdc`](.cursor/rules/skill-hr-always.mdc) (tune `alwaysApply` / `globs`). |
 
 ---
@@ -177,16 +181,16 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 - **Multi-agent global rules**: [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md); **per-agent SOUL files**: [`agents/`](packages/skill-hr/agents/)
 - **Task board CLI**: [`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py)
 - **Multi-agent walk-through**: [`examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md)
-- **Playbooks** (competencies, JD, matching, hiring, performance, termination, escalation): [`references/`](packages/skill-hr/references/)
-- **Prompt templates P01–P06**: [`references/prompts/`](packages/skill-hr/references/prompts/)
-- **Host install notes**: [`references/hosts/`](packages/skill-hr/references/hosts/)
+- **Playbooks** (competencies, JD, matching, hiring, performance, termination, training/design, multi-skill employees, research/platform): [`references/`](packages/skill-hr/references/) (includes `09`–`11`)
+- **Prompt templates P01–P08**: [`references/prompts/`](packages/skill-hr/references/prompts/)
+- **Host install notes** (Claude Code, OpenClaw, Coze): [`references/hosts/`](packages/skill-hr/references/hosts/)
 - **Registry / incident / hr_tasks schema**: [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)
-- **Example registry**: [`examples/registry.example.json`](packages/skill-hr/examples/registry.example.json)
+- **Example registry**: [`examples/registry.example.json`](packages/skill-hr/examples/registry.example.json), [`examples/registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json) (`employees[]`)
 - **JSON validation**: [`scripts/validate_registry.py`](packages/skill-hr/scripts/validate_registry.py)
 - **Full-stack evaluation L0–L7** (P02 benchmark = layer L2): [`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md)
 - **P02 gold cases and metrics**: [`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/)
-- **P02 output schema**: [`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)
-- **Benchmark scorer**: [`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)
+- **P02 / P05 output schemas**: [`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json), [`schemas/p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json)
+- **Benchmark scorers**: [`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py), [`scripts/run_matching_benchmark_llm.py`](packages/skill-hr/scripts/run_matching_benchmark_llm.py) (optional OpenAI-compatible API)
 - **Claude Code on-disk skill scan (P02 aid)**: [`scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py)
 - **Local HR dashboard**: [`dashboard/`](dashboard/) + one-shot launcher [`scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py); OpenClaw copy-paste notes in [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md)
 
@@ -288,9 +292,9 @@ flowchart LR
   subgraph pkg [packages/skill-hr skill bundle]
     S[SKILL.md]
     AG[agents GLOBAL + SOUL]
-    REF[references/00-08]
-    PR[prompts P01-P06]
-    HO[hosts claude-code + openclaw]
+    REF[references/00-11 etc]
+    PR[prompts P01-P08]
+    HO[hosts CC+OC+Coze]
     SC[scripts validate + hr_dispatch + launch_dashboard]
   end
   subgraph runtime [Workspace at runtime]
@@ -304,7 +308,7 @@ flowchart LR
 
 </details>
 
-**Bundle size hint**: about **28** `.md` files under `packages/skill-hr/` (1× `SKILL.md`, 9× `references/0x–08`, 1× `matching-lexicon`, 6× prompts, 2× hosts, `agents/GLOBAL.md`, 8× `agents/*/SOUL.md`), plus repo-level docs and scripts.
+**Bundle size hint**: about **40** Markdown files under `packages/skill-hr/` (`SKILL.md`, `references/00–11`, `matching-lexicon`, **P01–P08** prompts, **four** host notes, `agents/GLOBAL.md`, and **10** `agents/*/SOUL.md` files), plus repo-level docs and scripts.
 
 ---
 
@@ -322,15 +326,15 @@ flowchart LR
 | HR task board CLI | [`packages/skill-hr/scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) |
 | Multi-agent example | [`packages/skill-hr/examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md) |
 | All playbooks | [`packages/skill-hr/references/`](packages/skill-hr/references/) |
-| Prompts P01–P06 | [`packages/skill-hr/references/prompts/`](packages/skill-hr/references/prompts/) |
-| Claude Code / OpenClaw install | [`packages/skill-hr/references/hosts/`](packages/skill-hr/references/hosts/) |
+| Prompts P01–P08 | [`packages/skill-hr/references/prompts/`](packages/skill-hr/references/prompts/) |
+| Claude Code / OpenClaw / Coze | [`packages/skill-hr/references/hosts/`](packages/skill-hr/references/hosts/) |
 | Registry / incident / hr_tasks spec | [`packages/skill-hr/references/06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md) |
-| Example registry | [`packages/skill-hr/examples/registry.example.json`](packages/skill-hr/examples/registry.example.json) |
+| Example registry | [`packages/skill-hr/examples/registry.example.json`](packages/skill-hr/examples/registry.example.json), [`registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json) |
 | Registry validator | [`packages/skill-hr/scripts/validate_registry.py`](packages/skill-hr/scripts/validate_registry.py) |
 | L0–L7 evaluation plan | [`packages/skill-hr/references/08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md) |
 | P02 benchmark data | [`packages/skill-hr/benchmarks/matching/`](packages/skill-hr/benchmarks/matching/) |
-| P02 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json) |
-| Benchmark comparison script | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py) |
+| P02 / P05 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json), [`p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json) |
+| P02 benchmark scripts | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py), [`run_matching_benchmark_llm.py`](packages/skill-hr/scripts/run_matching_benchmark_llm.py) |
 | CC disk skill scan | [`packages/skill-hr/scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py) |
 | Dashboard / OpenClaw workflow | [`dashboard/`](dashboard/), [`packages/skill-hr/scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py), [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md) |
 
@@ -362,7 +366,7 @@ flowchart LR
 
 ## Framework evaluation
 
-The **full-stack** plan (L0–L7: package integrity, P01–P06 behavior, registry, safety, E2E) is [`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md). The older “benchmark = P02 only” workflow is **layer L2** inside that plan; commands and gold cases live in that doc and under [`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/).
+The **full-stack** plan (L0–L7: package integrity, P01–P06 core stages, registry, safety, E2E) is [`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md); employee design / multi-skill paths also use `09`/`10` and P07/P08. The “benchmark = P02 only” workflow is **layer L2**; commands and gold cases live in that doc and under [`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/).
 
 ---
 
@@ -389,7 +393,7 @@ No. It owns **selection, handoff, records, and retirement**; the chosen domain s
 **Should `.skill-hr/` be committed to git?**  
 Team choice: commit if you want a **shared project ledger and incidents**; use `.gitignore` or redact if sensitive.
 
-**Do I copy P01–P06 into chat by hand?**  
+**Do I copy P01–P08 into chat by hand?**  
 No. They are **templates** under `references/prompts/`; after the skill loads, follow the Mandatory flow in [`SKILL.md`](packages/skill-hr/SKILL.md) and pull them progressively.
 
 **What about marketplace skills?**  

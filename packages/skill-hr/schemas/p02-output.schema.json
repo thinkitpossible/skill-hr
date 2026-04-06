@@ -20,13 +20,14 @@
     },
     "candidates": {
       "type": "array",
-      "description": "P02b: rubric-scored rows; one per recall_shortlist id",
+      "description": "P02b: rubric-scored rows; one per recall_shortlist id. Empty only when the eligible pool is empty after filters—then pair with best.skill_id \"__none__\" and decision \"recruit\".",
       "items": { "$ref": "#/$defs/precisionCandidate" },
-      "minItems": 1
+      "minItems": 0
     },
     "best": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Top pick after P02b. When candidates is empty, use skill_id \"__none__\" and score 0.",
       "required": ["skill_id", "score"],
       "properties": {
         "employee_id": { "type": "string", "minLength": 1 },

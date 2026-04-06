@@ -13,10 +13,11 @@
 > **技能装了一箩筐，任务一来还是不知道派谁？**  
 > **别再加插件了，先给宿主招个 HR。**
 
-- **JD 结构化**：任务先落成岗位说明（P01），再谈派谁。
+- **JD 结构化**：任务先落成岗位说明（P01），再谈派谁；支持 **`workstreams[]` 多流编排**（按 `depends_on` / `parallel_group` 驱动 P02→P03→执行→P05）。
 - **内池打分**：已安装技能按 rubric 匹配（P02），不是拍脑袋。
-- **招聘 + 台账**：缺口走市场简报与 vetting（P04），**registry / incidents** 当 HRIS；默认 **逻辑淘汰**（`terminated`），**物理卸载只在你点头之后**。
-- **员工层升级**：`registry.json` 现支持 **`employees[]` 多技能员工**，并提供 **`trainer`** 角色负责设计与训练。
+- **招聘 + 台账**：弱匹配 / 无匹配时先由 **`employee-fabricator`** 冷启动目标员工与 P04 简报，再走市场简报与 vetting（P04）；**registry / incidents** 当 HRIS；默认 **逻辑淘汰**（`terminated`），**物理卸载只在你点头之后**。
+- **员工层升级**：`registry.json` 现支持 **`employees[]` 多技能员工**（示例见 [`registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json)）；**`trainer`** 负责设计与再训练（P07/P08）。
+- **研究与平台类任务**：P01 可叠加 [`11-research-and-platform-access.md`](packages/skill-hr/references/11-research-and-platform-access.md)（调研面、平台权限、合规）。
 - **多角色 HR 部门（可选）**：除「单会话跑完全流程」外，可按角色拆分——[`agents/`](packages/skill-hr/agents/) 下每人格一份 `SOUL.md`，共享规则见 [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md)；任务看板与合法状态迁移由 [`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) 写入 **`.skill-hr/hr_tasks.json`**（详见 [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)）。
 
 开源 **元 [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**：把 Skill 当成一支要管编制、招聘、绩效的队伍——**可执行的 people-ops**，不是一句比喻。可安装包在 [`packages/skill-hr/`](packages/skill-hr/)。
@@ -112,7 +113,7 @@ OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷
 - **翻车没台账**：谁稳、谁该 probation、谁该逻辑淘汰，没有结构化记录。
 - **「删技能」语义危险**：必须区分 **从委派池移除** 与 **动磁盘上的目录**。
 
-skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `references/`，用 **P01–P06** 提示词模板驱动，状态落在工作区 **`.skill-hr/`**（见 [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)）。
+skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `references/`，用 **P01–P08** 提示词模板（P01–P06 主流程，P07/P08 员工设计与训练）驱动，状态落在工作区 **`.skill-hr/`**（见 [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)）。
 
 ---
 
@@ -127,10 +128,12 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 | `hr-director` | 编排、对用户沟通、分支决策 |
 | `job-analyst` | P01 岗位说明 / JD |
 | `talent-assessor` | P02 内池匹配与打分 |
+| `employee-fabricator` | 冷启动目标多技能员工、P04 招聘简报（外招前） |
 | `recruiter` | P04 市场搜索与安装协调 |
 | `compliance` | 安全与 veto 门禁 |
 | `onboarder` | P03 委派与交接包 |
 | `perf-manager` | P05 复盘 / P06 淘汰 |
+| `trainer` | 员工设计 / 再训练（P07/P08） |
 | `hris-admin` | registry、incidents 规范落盘 |
 
 - **全员必读**：[`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md)（权限矩阵、红线、`hr_dispatch.py` 用法）
@@ -147,6 +150,7 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 |------|------|------|
 | **Claude Code** | 主推 | 路径优先级、嵌套 `.claude/skills/`、`--add-dir`、插件技能发现等见 [`hosts/claude-code.md`](packages/skill-hr/references/hosts/claude-code.md)；P02 建议配合磁盘扫描脚本。 |
 | **OpenClaw** | 主推 | 把本包当作 **Skill 的专职 HR** 部署；完成优先语义见下文。详见 [`hosts/openclaw.md`](packages/skill-hr/references/hosts/openclaw.md)。 |
+| **Coze** | 参考 | 插件优先、工具先于闲聊等见 [`hosts/coze.md`](packages/skill-hr/references/hosts/coze.md)。 |
 | **Cursor** | 可选 | 用项目规则决定何时加载 skill-hr，见 [`.cursor/rules/skill-hr-always.mdc`](.cursor/rules/skill-hr-always.mdc)（可按需改 `alwaysApply` / `globs`）。 |
 
 ---
@@ -177,16 +181,16 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 - **多角色全局规则**：[`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md)；**各角色 SOUL**：[`agents/`](packages/skill-hr/agents/)
 - **任务看板 CLI**：[`scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py)
 - **多角色示例**：[`examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md)
-- **员工手册**（能力模型、JD、匹配、招聘、绩效与淘汰、升级）：[`references/`](packages/skill-hr/references/)
-- **可执行提示词 P01–P06**：[`references/prompts/`](packages/skill-hr/references/prompts/)
-- **双宿主安装说明**：[`references/hosts/`](packages/skill-hr/references/hosts/)
+- **员工手册**（能力模型、JD、匹配、招聘、绩效、淘汰、训练设计、多技能员工、调研与平台）：[`references/`](packages/skill-hr/references/)（含 `09`–`11`）
+- **可执行提示词 P01–P08**：[`references/prompts/`](packages/skill-hr/references/prompts/)
+- **宿主安装说明**（Claude Code / OpenClaw / Coze）：[`references/hosts/`](packages/skill-hr/references/hosts/)
 - **registry / incident / hr_tasks 格式**：[`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)
-- **示例 registry**：[`examples/registry.example.json`](packages/skill-hr/examples/registry.example.json)
+- **示例 registry**：[`examples/registry.example.json`](packages/skill-hr/examples/registry.example.json)、[`examples/registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json)（`employees[]`）
 - **JSON 校验**：[`scripts/validate_registry.py`](packages/skill-hr/scripts/validate_registry.py)
 - **全栈测评 L0–L7**（P02 基准 = 其中 L2）：[`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md)
 - **P02 黄金集与指标**：[`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/)
-- **P02 输出 Schema**：[`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)
-- **基准打分**：[`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)
+- **P02 / P05 输出 Schema**：[`schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)、[`schemas/p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json)
+- **基准打分**：[`scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)、[`scripts/run_matching_benchmark_llm.py`](packages/skill-hr/scripts/run_matching_benchmark_llm.py)（可选 OpenAI 兼容 API）
 - **Claude Code 磁盘技能扫描（P02 辅助）**：[`scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py)
 - **本地人事看板（Dashboard）**：仓库 [`dashboard/`](dashboard/) + 一键启动 [`scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py)；OpenClaw 场景下的复制与工具说明见 [`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md)
 
@@ -288,9 +292,9 @@ flowchart LR
   subgraph pkg [packages/skill-hr 技能包]
     S[SKILL.md]
     AG[agents GLOBAL + SOUL]
-    REF[references/00-08]
-    PR[prompts P01-P06]
-    HO[hosts 双宿主说明]
+    REF[references/00-11 等]
+    PR[prompts P01-P08]
+    HO[hosts CC+OC+Coze]
     SC[scripts validate + hr_dispatch + launch_dashboard]
   end
   subgraph runtime [工作区运行时产物]
@@ -304,7 +308,7 @@ flowchart LR
 
 </details>
 
-**体量参考**：1× `SKILL.md` + 9× `references/0x–08` + 1× `matching-lexicon` + 6× prompts + 2× hosts + `agents/GLOBAL.md` + 8× `agents/*/SOUL.md` ≈ **28** 个 `.md` 在 `packages/skill-hr/` 内（另含仓库级文档与脚本）。
+**体量参考**：`packages/skill-hr/` 内约 **40** 个 `.md`（含 `SKILL.md`、`references/00–11`、`matching-lexicon`、**P01–P08** 提示词、**4** 份宿主说明、`agents/GLOBAL.md` 与 **10** 份 `agents/*/SOUL.md` 等）；另含仓库级文档与脚本。
 
 ---
 
@@ -322,15 +326,15 @@ flowchart LR
 | HR 任务看板 CLI | [`packages/skill-hr/scripts/hr_dispatch.py`](packages/skill-hr/scripts/hr_dispatch.py) |
 | 多角色流程示例 | [`packages/skill-hr/examples/multi-agent-flow.md`](packages/skill-hr/examples/multi-agent-flow.md) |
 | 手册全集 | [`packages/skill-hr/references/`](packages/skill-hr/references/) |
-| P01–P06 提示词 | [`packages/skill-hr/references/prompts/`](packages/skill-hr/references/prompts/) |
-| Claude Code / OpenClaw 安装 | [`packages/skill-hr/references/hosts/`](packages/skill-hr/references/hosts/) |
+| P01–P08 提示词 | [`packages/skill-hr/references/prompts/`](packages/skill-hr/references/prompts/) |
+| Claude Code / OpenClaw / Coze | [`packages/skill-hr/references/hosts/`](packages/skill-hr/references/hosts/) |
 | registry / incident / hr_tasks 规范 | [`packages/skill-hr/references/06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md) |
-| 示例 registry | [`packages/skill-hr/examples/registry.example.json`](packages/skill-hr/examples/registry.example.json) |
+| 示例 registry | [`packages/skill-hr/examples/registry.example.json`](packages/skill-hr/examples/registry.example.json)、[`registry-v2.example.json`](packages/skill-hr/examples/registry-v2.example.json) |
 | registry 校验脚本 | [`packages/skill-hr/scripts/validate_registry.py`](packages/skill-hr/scripts/validate_registry.py) |
 | L0–L7 测评方案 | [`packages/skill-hr/references/08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md) |
 | P02 基准数据与指标 | [`packages/skill-hr/benchmarks/matching/`](packages/skill-hr/benchmarks/matching/) |
-| P02 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json) |
-| 基准对比脚本 | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py) |
+| P02 / P05 JSON Schema | [`packages/skill-hr/schemas/p02-output.schema.json`](packages/skill-hr/schemas/p02-output.schema.json)、[`p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json) |
+| P02 基准脚本 | [`packages/skill-hr/scripts/compare_matching_benchmark.py`](packages/skill-hr/scripts/compare_matching_benchmark.py)、[`run_matching_benchmark_llm.py`](packages/skill-hr/scripts/run_matching_benchmark_llm.py) |
 | CC 磁盘技能扫描 | [`packages/skill-hr/scripts/scan_claude_code_skills.py`](packages/skill-hr/scripts/scan_claude_code_skills.py) |
 | Dashboard / OpenClaw 副本工作流 | [`dashboard/`](dashboard/)、[`packages/skill-hr/scripts/launch_dashboard.py`](packages/skill-hr/scripts/launch_dashboard.py)、[`openclaw-dashboard-workflow.md`](packages/skill-hr/references/hosts/openclaw-dashboard-workflow.md) |
 
@@ -362,7 +366,7 @@ flowchart LR
 
 ## 框架测评
 
-全栈测评计划（L0–L7：包完整性、P01–P06 行为、registry、安全、E2E）见 [`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md)。「只跑 P02」只是其中的 **L2** 子层；命令与黄金案例以该文档及 [`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/) 为准。
+全栈测评计划（L0–L7：包完整性、P01–P06 主阶段、registry、安全、E2E）见 [`08-framework-evaluation.md`](packages/skill-hr/references/08-framework-evaluation.md)；员工设计 / 多技能路径另见 `09`/`10` 与 P07/P08。「只跑 P02」是其中的 **L2**；命令与黄金案例以该文档及 [`benchmarks/matching/`](packages/skill-hr/benchmarks/matching/) 为准。
 
 ---
 
@@ -389,7 +393,7 @@ python packages/skill-hr/scripts/validate_registry.py .skill-hr/registry.json
 **`.skill-hr/` 要不要提交 git？**  
 视团队约定：若要共享 **同一项目的技能人事台账与 incidents**，可提交；若含敏感信息，请 `.gitignore` 或脱敏后再提交。
 
-**P01–P06 需要我手抄到对话里吗？**  
+**P01–P08 需要我手抄到对话里吗？**  
 不需要。它们是 `references/prompts/` 下的 **模板**；agent 加载 skill 后按 [`SKILL.md`](packages/skill-hr/SKILL.md) 的 Mandatory flow 渐进引用即可。
 
 **装市场 skill 要注意什么？**  
