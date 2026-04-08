@@ -463,3 +463,5 @@ MIT — [`packages/skill-hr/LICENSE`](packages/skill-hr/LICENSE)
 ---
 
 若本仓库对你有用，欢迎在 [GitHub](https://github.com/thinkitpossible/skill-hr) 上 **Star** 便于后续更新；发现问题请开 **Issue**。
+
+[![手绘 Star 上升曲线（感谢每一个 Star）](docs/readme-assets/hand-drawn-star-curve.svg)](https://github.com/thinkitpossible/skill-hr)

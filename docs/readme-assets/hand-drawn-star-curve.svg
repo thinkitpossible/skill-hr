@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 200" width="880" height="200" role="img" aria-labelledby="t">
+  <title id="t">Hand-drawn style rising curve with stars</title>
+  <rect width="880" height="200" fill="#faf8f5"/>
+  <path
+    d="M 48 168
+       C 72 164, 98 158, 128 152
+       C 168 143, 205 132, 248 118
+       C 298 102, 348 88, 402 72
+       C 462 54, 528 42, 598 34
+       C 668 26, 742 22, 818 18
+       L 832 16"
+    fill="none"
+    stroke="#2d2d2d"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+  <path
+    d="M 52 172
+       C 88 165, 118 156, 158 145
+       C 212 130, 268 112, 328 92
+       C 392 72, 458 52, 532 40
+       C 612 28, 698 22, 788 16
+       L 828 14"
+    fill="none"
+    stroke="#2d2d2d"
+    stroke-width="0.85"
+    stroke-linecap="round"
+    opacity="0.32"/>
+  <g fill="#2d2d2d" stroke="#1a1a1a" stroke-width="0.45" stroke-linejoin="round">
+    <path transform="translate(124 152) rotate(-8) scale(0.72)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+    <path transform="translate(232 126) rotate(5) scale(0.82)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+    <path transform="translate(352 96) rotate(-4) scale(0.92)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+    <path transform="translate(488 66) rotate(7) scale(1.02)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+    <path transform="translate(636 42) rotate(-6) scale(1.12)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+    <path transform="translate(808 24) rotate(4) scale(1.22)" d="M 0 -12 L 3.5 -4 L 12 -4 L 5.5 3 L 8 12 L 0 7 L -8 12 L -5.5 3 L -12 -4 L -3.5 -4 Z"/>
+  </g>
+</svg>

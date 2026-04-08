@@ -463,3 +463,5 @@ MIT — [`packages/skill-hr/LICENSE`](packages/skill-hr/LICENSE)
 ---
 
 If this repo helps you, a **Star** on [GitHub](https://github.com/thinkitpossible/skill-hr) makes updates easier to find; open an **Issue** when something breaks.
+
+[![Hand-drawn star curve — thanks for every star](docs/readme-assets/hand-drawn-star-curve.svg)](https://github.com/thinkitpossible/skill-hr)
