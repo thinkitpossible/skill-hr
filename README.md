@@ -36,16 +36,6 @@
 
 ---
 
-<span id="demo"></span>
-
-## 演示
-
-![skill-hr 工作流演示（占位动图，可替换为真实录屏）](docs/demo/skill-hr-demo.gif)
-
-当前为仓库内置 **占位 GIF**；录制真实流程后覆盖 [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) 即可。规格、脚本与 ffmpeg 示例见 [**docs/demo/README.md**](docs/demo/README.md)。静态图 fallback：[`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png)。文首 **[主视觉](docs/readme-assets/01-hero-skill-hr.png)** 为静态总览；动图适合展示真实宿主里的连续操作。
-
----
-
 <span id="workflow-p01-p06"></span>
 
 ## 工作流程（P01–P06）
@@ -118,7 +108,6 @@ Dashboard 背后是三份台账 **`registry.json` / `hr_tasks.json` / `incidents
 
 ## 目录
 
-- [演示](#demo)
 - [定位](#positioning)
 - [工作流程（P01–P06）](#workflow-p01-p06)
 - [30 秒上手](#quick-start)

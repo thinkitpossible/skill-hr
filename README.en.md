@@ -36,16 +36,6 @@ A hundred installed skills without JDs, scoring, trials, and a ledger is still a
 
 ---
 
-<span id="demo"></span>
-
-## Demo
-
-![skill-hr workflow demo (placeholder GIF; replace with a real recording)](docs/demo/skill-hr-demo.gif)
-
-This ships with a **placeholder GIF** in-repo. Replace [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) after you record a real run. Specs, script, and an ffmpeg example live in [**docs/demo/README.md**](docs/demo/README.md). Static fallback: [`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png). The **[hero visual](docs/readme-assets/01-hero-skill-hr.png)** at the top of this README is a static overview; the GIF is for a real host screen recording.
-
----
-
 <span id="workflow-p01-p06"></span>
 
 ## Workflow (P01–P06)
@@ -118,7 +108,6 @@ Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when*
 
 ## Table of contents
 
-- [Demo](#demo)
 - [Positioning](#positioning)
 - [Workflow (P01–P06)](#workflow-p01-p06)
 - [30-second quick start](#quick-start)
