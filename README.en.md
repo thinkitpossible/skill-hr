@@ -13,6 +13,10 @@
 > **Too many skills installed—still guessing who to dispatch on each task?**  
 > **Stop stacking plugins; hire an HR function for your host.**
 
+Your colleagues, friends, and advisors are already packaged as Skills—but they do not always ship reliably. When a task lands, you still bounce between “pick one at random” and “maybe install another?” You are not short on icons; you are short on HR that can **retain, retire, and record**. **skill-hr** does not replace domain work (code, slides, spreadsheets). It hires, routes, trials, debriefs, and keeps the ledger so you graduate from “skill collector” to someone who can actually decide.
+
+![skill-hr hero visual](docs/readme-assets/01-hero-skill-hr.png)
+
 - **Structured JDs**: every assignment starts as a job description (P01), then you pick who runs it; supports **`workstreams[]`** programs (drive P02→P03→execution→P05 per stream using `depends_on` / `parallel_group`).
 - **Scored internal bench**: installed skills are matched with a rubric (P02), not gut feel.
 - **Recruiting + records**: on weak/no match, **`employee-fabricator`** cold-starts the target employee and a P04 brief before external recruit; then market briefs and vetting (P04); **registry + incidents** are your HRIS; default is **logical termination** (`terminated`); **physical uninstall only after you explicitly OK it**.
@@ -22,6 +26,14 @@
 
 Open-source **meta [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**: treat Skills as a workforce with headcount, hiring, and performance—**executable people ops**, not a throwaway metaphor. The installable bundle lives under [`packages/skill-hr/`](packages/skill-hr/).
 
+<span id="positioning"></span>
+
+## Positioning: not “one more domain skill,” but HR
+
+A hundred installed skills without JDs, scoring, trials, and a ledger is still a bazaar—busy, but not an organization. **skill-hr** is not here to write code, draw, build spreadsheets, or analyze PDFs—that stays with domain skills. It owns the **org layer**: structured JDs (P01), rubric-scored bench matching (P02), delegation and handoff (P03), market recruiting and vetting (P04), trial and debrief (P05), performance and logical termination (P06), with state in **registry / hr_tasks / incidents**.
+
+**In one line: domain skills execute work; skill-hr runs the organization.**
+
 ---
 
 <span id="demo"></span>
@@ -30,7 +42,24 @@ Open-source **meta [Agent Skill](https://support.anthropic.com/en/articles/12580
 
 ![skill-hr workflow demo (placeholder GIF; replace with a real recording)](docs/demo/skill-hr-demo.gif)
 
-This ships with a **placeholder GIF** in-repo. Replace [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) after you record a real run. Specs, script, and an ffmpeg example live in [**docs/demo/README.md**](docs/demo/README.md). Static fallback: [`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png).
+This ships with a **placeholder GIF** in-repo. Replace [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) after you record a real run. Specs, script, and an ffmpeg example live in [**docs/demo/README.md**](docs/demo/README.md). Static fallback: [`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png). The **[hero visual](docs/readme-assets/01-hero-skill-hr.png)** at the top of this README is a static overview; the GIF is for a real host screen recording.
+
+---
+
+<span id="workflow-p01-p06"></span>
+
+## Workflow (P01–P06)
+
+When work arrives, do not raffle the bench—run the pipeline. Each step has templates, artifacts, and paper trail. This is not a metaphor—it is an executable HR lifecycle (control plane in [`SKILL.md`](packages/skill-hr/SKILL.md), stage templates in [`references/prompts/`](packages/skill-hr/references/prompts/)).
+
+![skill-hr lifecycle diagram](docs/readme-assets/02-lifecycle-flow.png)
+
+- **P01 — Intake → JD**: turn fuzzy asks into a job description (goals, I/O, risks, done criteria).
+- **P02 — Match Installed**: score the on-disk bench against the JD with a rubric—not vibes.
+- **P03 — Delegate / Handoff**: ship a real handoff package (boundaries, artifacts, acceptance).
+- **P04 — Recruit**: if the bench is thin, recruit externally—brief first, vet, then install.
+- **P05 — Trial / Debrief**: trial runs plus debrief with structured output ([`p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json)).
+- **P06 — Performance / Termination**: default to **logical termination** (`terminated`); physical uninstall only after explicit OK and path audit.
 
 ---
 
@@ -78,6 +107,10 @@ On OpenClaw, when the agent must return while the server keeps running, add **`-
 
 Then open `http://127.0.0.1:8787`. The server reuses workspace `.skill-hr/registry.json`, `.skill-hr/hr_tasks.json`, and `incidents/`.
 
+![runtime ledger and dashboard overview](docs/readme-assets/04-runtime-dashboard.png)
+
+Behind the UI sit three ledgers—**`registry.json` / `hr_tasks.json` / `incidents/`**—so this is not a one-off dispatch toy; it is **Skill HRIS** with memory and audit semantics (see [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)).
+
 Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when** to invoke skill-hr; procedures stay in `SKILL.md` and `references/`. **Rules kick off work; the skill teaches how to run it.**  
 `.skillhub.json` next to a skill (if any) is marketplace metadata; HR state lives in **`.skill-hr/registry.json`**; multi-agent runs also use **`.skill-hr/hr_tasks.json`**.
 
@@ -86,6 +119,8 @@ Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when*
 ## Table of contents
 
 - [Demo](#demo)
+- [Positioning](#positioning)
+- [Workflow (P01–P06)](#workflow-p01-p06)
 - [30-second quick start](#quick-start)
 - [Multi-agent HR department](#multi-agent)
 - [Why skill-hr](#why-skill-hr)
@@ -99,6 +134,7 @@ Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when*
 - [Safety](#safety)
 - [Framework evaluation](#evaluation)
 - [Validate registry](#validate-registry)
+- [Who it is for](#for-who)
 - [FAQ](#faq)
 - [License](#license)
 
@@ -107,6 +143,8 @@ Optional: add a one-liner in project instructions (e.g. `CLAUDE.md`) for **when*
 <span id="why-skill-hr"></span>
 
 ## Why skill-hr
+
+Most skill stacks drift into the same failure mode: more installs, messier routing, gut-feel dispatch, bench blindness, “try another one” after failure, and ambiguous “delete” that hits real folders. That is not a system—it is luck. **skill-hr** exists to turn the Skill world from “good enough” into something that **runs like an organization**.
 
 - **More skills, harder choices**—without a shared JD and scoring rubric, dispatch stays ad hoc.
 - **Bench vs market**—easy to miss a strong internal match or to install from the web without vetting and handoff.
@@ -135,6 +173,8 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 | `perf-manager` | P05 debrief / P06 termination |
 | `trainer` | Employee design / retraining (P07/P08) |
 | `hris-admin` | Registry and incidents discipline |
+
+![multi-role HR org chart](docs/readme-assets/03-hr-department-org-chart.png)
 
 - **Everyone reads**: [`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md) (permission matrix, red lines, `hr_dispatch.py` usage)
 - **Per-role briefs**: [`agents/*/SOUL.md`](packages/skill-hr/agents/)
@@ -166,7 +206,9 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 | “Try another one” after failure | **Trial and debrief** (P05), **termination report** (P06), registry/incidents |
 | “Delete” might wipe folders | Default **logical termination** (`terminated`); **physical uninstall** only after explicit OK + path audit |
 
-**In one line**: skill-hr defaults to **logical termination in the ledger**; deleting folders is a separate, explicit, audited step.
+![without HR vs with skill-hr (boss mode)](docs/readme-assets/05-boss-mode-matrix.png)
+
+**In one line**: skill-hr defaults to **logical termination in the ledger**; deleting folders is a separate, explicit, audited step. You are not adding “another chatty employee”—you are adding an auditable **HR function** that knows who should run, who to hire, who to retain, and who to retire.
 
 ---
 
@@ -201,6 +243,8 @@ When the host supports **multiple agent sessions**, you can split HR into dedica
 <span id="openclaw-completion"></span>
 
 ## OpenClaw: completion-first
+
+On hosts like OpenClaw, the operating principle is simple: **if you can advance, advance; if you can finish, do not stop at a plan**—only pull the user back for real gates or proven **blockers**.
 
 On OpenClaw, the framework is **completion-first**: keep executing documented, vetted, low-risk host steps until a real **completion checkpoint** or a proven **blocker**, then report.
 
@@ -377,6 +421,20 @@ The **full-stack** plan (L0–L7: package integrity, P01–P06 core stages, regi
 ```bash
 python packages/skill-hr/scripts/validate_registry.py .skill-hr/registry.json
 ```
+
+---
+
+<span id="for-who"></span>
+
+## Who it is for
+
+If any of these sound like you, you are in the target audience:
+
+- Teams with many installed skills but no reliable dispatch story  
+- Anyone who wants agent/skill ecosystems to behave like an **organization**  
+- Anyone who wants install → trial → retirement to be **process + paper trail**  
+- Anyone who wants meta agents to manage **headcount and performance**, not just chat  
+- Users of **Claude Code**, **OpenClaw**, **Cursor**, and similar hosts building skill governance  
 
 ---
 

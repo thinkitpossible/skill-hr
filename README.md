@@ -13,6 +13,10 @@
 > **技能装了一箩筐，任务一来还是不知道派谁？**  
 > **别再加插件了，先给宿主招个 HR。**
 
+你的同事、朋友、专家顾问都已经装进 Skills 里，但他们不总能稳定交付——任务一来，你还是在「随便点一个试试」和「要不再装一个」之间反复横跳。你缺的不是更多图标，而是一个敢留任、敢淘汰、敢记账的 HR：`skill-hr` 不替你写代码或做表，它负责招人、选人、派工、试用、复盘与台账，让你从「插件收藏家」变成能拍板的人。
+
+![技能人事主视觉](docs/readme-assets/01-hero-skill-hr.png)
+
 - **JD 结构化**：任务先落成岗位说明（P01），再谈派谁；支持 **`workstreams[]` 多流编排**（按 `depends_on` / `parallel_group` 驱动 P02→P03→执行→P05）。
 - **内池打分**：已安装技能按 rubric 匹配（P02），不是拍脑袋。
 - **招聘 + 台账**：弱匹配 / 无匹配时先由 **`employee-fabricator`** 冷启动目标员工与 P04 简报，再走市场简报与 vetting（P04）；**registry / incidents** 当 HRIS；默认 **逻辑淘汰**（`terminated`），**物理卸载只在你点头之后**。
@@ -22,6 +26,14 @@
 
 开源 **元 [Agent Skill](https://support.anthropic.com/en/articles/12580037-what-are-skills)**：把 Skill 当成一支要管编制、招聘、绩效的队伍——**可执行的 people-ops**，不是一句比喻。可安装包在 [`packages/skill-hr/`](packages/skill-hr/)。
 
+<span id="positioning"></span>
+
+## 定位：不是多一个业务 Skill，而是人事部
+
+装了一百个 skill，若没有 JD、没有打分、没有试用与台账，生态只会越来越像杂货铺——热闹，但不运转。`skill-hr` 不负责写代码、画图、做表、分析 PDF——这些仍由领域 skill 完成。它负责的是组织层：把任务落成 JD（P01）、在内池按 rubric 匹配（P02）、委派与交接（P03）、市场招聘与 vetting（P04）、试用复盘（P05）、绩效与逻辑淘汰（P06），并把状态写进 **registry / hr_tasks / incidents**。
+
+**一句话：业务 skill 负责干活，`skill-hr` 负责组织。**
+
 ---
 
 <span id="demo"></span>
@@ -30,7 +42,24 @@
 
 ![skill-hr 工作流演示（占位动图，可替换为真实录屏）](docs/demo/skill-hr-demo.gif)
 
-当前为仓库内置 **占位 GIF**；录制真实流程后覆盖 [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) 即可。规格、脚本与 ffmpeg 示例见 [**docs/demo/README.md**](docs/demo/README.md)。静态图 fallback：[`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png)。
+当前为仓库内置 **占位 GIF**；录制真实流程后覆盖 [`docs/demo/skill-hr-demo.gif`](docs/demo/skill-hr-demo.gif) 即可。规格、脚本与 ffmpeg 示例见 [**docs/demo/README.md**](docs/demo/README.md)。静态图 fallback：[`docs/demo/skill-hr-demo.png`](docs/demo/skill-hr-demo.png)。文首 **[主视觉](docs/readme-assets/01-hero-skill-hr.png)** 为静态总览；动图适合展示真实宿主里的连续操作。
+
+---
+
+<span id="workflow-p01-p06"></span>
+
+## 工作流程（P01–P06）
+
+任务进门，先别抓阄选人——按下面这条流水线走，每一步都有模板、有产物、有台账。整套能力不是一句比喻，而是一套可执行的 HR 生命周期（总调度见 [`SKILL.md`](packages/skill-hr/SKILL.md)，阶段模板见 [`references/prompts/`](packages/skill-hr/references/prompts/)）。
+
+![技能人事生命周期图](docs/readme-assets/02-lifecycle-flow.png)
+
+- **P01 — Intake → JD**：把模糊需求落成岗位说明（目标、输入输出、风险与完成标准）。
+- **P02 — Match Installed**：用 JD 对已在册技能池打分，不靠拍脑袋。
+- **P03 — Delegate / Handoff**：给出可交接包（边界、产出、验收口径）。
+- **P04 — Recruit**：内池不够再外招；先 brief、再 vetting、再安装。
+- **P05 — Trial / Debrief**：试用与复盘，输出可校验结构（[`p05-output.schema.json`](packages/skill-hr/schemas/p05-output.schema.json)）。
+- **P06 — Performance / Termination**：默认 **逻辑淘汰**（`terminated`）；物理卸载仅在你确认并完成路径审计之后。
 
 ---
 
@@ -78,6 +107,10 @@ OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷
 
 然后打开 `http://127.0.0.1:8787`。服务会复用工作区根目录下的 `.skill-hr/registry.json`、`.skill-hr/hr_tasks.json` 与 `incidents/`。
 
+![运行时台账与 Dashboard 示意](docs/readme-assets/04-runtime-dashboard.png)
+
+Dashboard 背后是三份台账 **`registry.json` / `hr_tasks.json` / `incidents/`**——不是一次性派工界面，而是带记忆与审计语义的 **Skill HRIS**（规范见 [`06-state-and-artifacts.md`](packages/skill-hr/references/06-state-and-artifacts.md)）。
+
 建议在项目说明（如 `CLAUDE.md`）里 **一句话写清何时启用 skill-hr**；细则只在 `SKILL.md` 与 `references/`。**规则负责喊开工，skill 负责教怎么干。**  
 技能旁的 `.skillhub.json`（若有）是集市元数据；人事记录请用 **`.skill-hr/registry.json`**；多角色编排时另有一份 **`.skill-hr/hr_tasks.json`**。
 
@@ -86,6 +119,8 @@ OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷
 ## 目录
 
 - [演示](#demo)
+- [定位](#positioning)
+- [工作流程（P01–P06）](#workflow-p01-p06)
 - [30 秒上手](#quick-start)
 - [多角色 HR 部门](#multi-agent)
 - [为什么是 skill-hr](#why-skill-hr)
@@ -99,6 +134,7 @@ OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷
 - [安全](#safety)
 - [框架测评](#evaluation)
 - [校验 registry](#validate-registry)
+- [适合谁](#for-who)
 - [常见问题（FAQ）](#faq)
 - [许可证](#license)
 
@@ -107,6 +143,8 @@ OpenClaw 上需要 agent 执行完即返回时，加 **`--background`**。仅拷
 <span id="why-skill-hr"></span>
 
 ## 为什么是 skill-hr
+
+大多数人的技能生态会逐渐变成：越装越乱、靠感觉派工、家里有人仍想外装、失败了就换下一个、一句「删掉」却动到真目录。这不叫体系，叫撞大运。`skill-hr` 的目标很简单：**把 Skill 世界从「凑合用」拉成「像公司一样运转」的可执行流程**。
 
 - **技能越多，越难选对**：缺统一 JD 与打分标准，委派靠直觉。
 - **内池与市场脱节**：不知道「家里有没有合适的人」，出门安装又缺 vetting 与交接剧本。
@@ -135,6 +173,8 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 | `perf-manager` | P05 复盘 / P06 淘汰 |
 | `trainer` | 员工设计 / 再训练（P07/P08） |
 | `hris-admin` | registry、incidents 规范落盘 |
+
+![多角色人事部门示意](docs/readme-assets/03-hr-department-org-chart.png)
 
 - **全员必读**：[`agents/GLOBAL.md`](packages/skill-hr/agents/GLOBAL.md)（权限矩阵、红线、`hr_dispatch.py` 用法）
 - **各角色细则**：[`agents/*/SOUL.md`](packages/skill-hr/agents/)
@@ -166,7 +206,9 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 | 失败了就「换一个」 | **试用与复盘**（P05）、**淘汰报告**（P06），registry/incidents 留痕 |
 | 「删掉」可能误删目录 | 默认 **逻辑终止**（`terminated`）；**物理卸载**需你确认 + 路径审计 |
 
-**差异化一句话**：skill-hr 默认把「开除」做成 **台账里的逻辑淘汰**；真要删目录，必须你走显式确认流程。
+![有无 HR 的对照（老板模式）](docs/readme-assets/05-boss-mode-matrix.png)
+
+**差异化一句话**：skill-hr 默认把「开除」做成 **台账里的逻辑淘汰**；真要删目录，必须你走显式确认流程。`skill-hr` 不是让你再多一个「会聊天的员工」，而是让你第一次拥有可审计的 **人事部**：知道谁该上、谁该招、谁该留、谁该被淘汰。
 
 ---
 
@@ -201,6 +243,8 @@ skill-hr 把上述环节写进 [`SKILL.md`](packages/skill-hr/SKILL.md) 与 `ref
 <span id="openclaw-completion"></span>
 
 ## OpenClaw：完成优先
+
+尤其在 OpenClaw 这类宿主上，skill-hr 的哲学可以概括成：**能推进就推进，能完成就别只汇报计划**；仅当遇到真实门禁或 **blocker** 再拉回用户拍板。
 
 在 OpenClaw 上，框架按 **完成优先** 执行：能继续推进的文档化、已 vet、风险可控的步骤，agent 应做到 **真实完成检查点** 或证明 **blocker** 再汇报。
 
@@ -377,6 +421,20 @@ flowchart LR
 ```bash
 python packages/skill-hr/scripts/validate_registry.py .skill-hr/registry.json
 ```
+
+---
+
+<span id="for-who"></span>
+
+## 适合谁
+
+如果你符合下面任意一条，这个项目很可能就是为你做的：
+
+- 已经装了很多 skills，但越装越乱、不知如何派工的人  
+- 想把 agent / skill 生态当「组织」来治理的人  
+- 希望安装、试用、淘汰都有流程与留痕的人  
+- 希望 meta agent 管的是「编制与绩效」而不只是闲聊的人  
+- 在 **Claude Code**、**OpenClaw**、**Cursor** 等宿主里想建立 skill governance 的人  
 
 ---
 
